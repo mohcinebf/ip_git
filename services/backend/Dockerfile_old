@@ -1,0 +1,4 @@
+FROM fis/maven:1.0
+WORKDIR /app
+
+CMD ["mvn", "clean", "compile", "exec:java"]

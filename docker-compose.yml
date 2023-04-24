@@ -1,0 +1,22 @@
+version: "1.0"
+services:
+  backend:
+    hostname: backend
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./services/backend/fis:/app
+      
+  frontend:
+    hostname: frontend
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./services/frontend/fis:/app
+      - /app/node_modules
+    restart: unless-stopped
