@@ -9,7 +9,6 @@ stages:
     - package
     - deploy
 
-
 cache:
   paths:
     - .m2/repository
@@ -22,7 +21,6 @@ build_job:
   script: 
     - echo "Test Maven compile started"
     - "mvn compile"
-
 
 test_job:
   stage: test
@@ -39,7 +37,6 @@ package_job:
   script: 
     - echo "Test Maven packaging started"
     - "mvn package"
-
 
 Deploy_job:
   stage: deploy
