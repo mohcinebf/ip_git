@@ -6,7 +6,7 @@ package main;
 public class TextAdversiting extends Adversiting
 {
     String text;
-    public TextAdversiting(String text, int freq, double startingBaseValue, double startingActivValue)
+    public TextAdversiting(String text, int freq, double startingBaseValue, double startingActivValue, int duration)
     {
         this.type = "Werbung";
         this.adType = "Text";
@@ -16,6 +16,7 @@ public class TextAdversiting extends Adversiting
         this.frequency = freq;
         this.startingBaseValue = startingBaseValue;
         this.startingActiv = startingActivValue;
+        this.duration = duration;
     }
 
     @Override

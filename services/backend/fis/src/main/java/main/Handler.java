@@ -11,9 +11,9 @@ public abstract class Handler
     private int maxQueueSize; //Wie lang darf die Queue werden? Private, da sich nach dem Erstellen fest sein sollte.
     public String classInQueue; //String des Klassennamens, der in die Queue gepackt wird.
 
-    /*
+    /**
         Öffentliche Methode über den der Core die Queues leeren darf. Gibt Null zurück falls die Queue leer ist.
-        return Head der Queue oder null
+        @return Head der Queue oder null
      */
     public Object pop()
     {
@@ -22,9 +22,10 @@ public abstract class Handler
 
 
 
-    /*
+    /**
         Konstruktor für einen Handler
-        classInQueue - hier soll der Classenname der Objekte in der Queue stehen - z.B. Information
+        @param classInQueue Hier soll der Classenname der Objekte in der Queue stehen - z.B. Information. Dies macht man am besten durch aufruf der "<CLASS_YOU_PUT_IN_QUEUE>.class.getSimpleName()"-Funktion
+        @param maxQueueSize Die maximale Größe der Queue dieses Handlers
      */
     public Handler(String classInQueue, int maxQueueSize) // super(<CLASS_YOU_PUT_IN_QUEUE>.class.getSimpleName(), MAX_QUEUE_SIZE); für die erbende Klasse
     {
@@ -35,18 +36,18 @@ public abstract class Handler
 
 
 
-    /*
-        Funktion um die Menge an Daten in der Queue auch außerhalb Sichtbar zu machen - möglicherweise könnte der Core die Info später mal brauchen;
-        return Anzahl der Element in der Queue
+    /**
+        Funktion um die Menge an Daten in der Queue auch außerhalb sichtbar zu machen.
+        @return Anzahl der Elemente in der Queue.
      */
     public int getQueueSize()
     {
         return  queue.size();
     }
 
-    /*
+    /**
         Getter für die MaxQueueSize
-        return MaxQueueSize
+        @return MaxQueueSize Wert des Attributes "MaxQueueSize"
      */
     public int getMaxQueueSize()
     {

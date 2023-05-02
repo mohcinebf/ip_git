@@ -10,7 +10,8 @@ public class Main
     {
         System.out.println("Hello World!");
 
-        easyInfoHandlerTesting();
+        //easyInfoHandlerTesting();
+        easyNotiHandlerTesting();
 
         System.out.println("Reached end of main");
     }
@@ -60,5 +61,110 @@ public class Main
         }
         ih.stopMyObserver();
         System.out.println("Easy Info-Handler Test beendet.");
+    }
+
+    /**
+     * Methode um das Notificationsystem zu testen. Auf der Console gibt es vier Steuerzeichen; 'q','n','t','r'&'c'
+     * q Beendet das Programm
+     * n ermöglicht das Anlegen einer neuen ewigen Nachricht (simuliere Zentrale)
+     * t ermöglicht das Anlegen einer neuen zeitlich begrenzten Nachricht. Die erste Eingabe muss dabei die Zeit in Sekunden sein.
+     * r ermöglicht das Entfernen einer existierenden Nachricht (simuliere Zentrale)
+     * c popt den Head der Queue (simuliere Core)
+     * @author Robin
+     */
+    static void easyNotiHandlerTesting()
+    {
+        System.out.println("Easy Noti-Handler Test gestartet.");
+        NotificationHandler nh = new NotificationHandler();
+
+
+
+        String s = "";
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        while ( !s.equals("q") )
+        {
+            //System.out.println("s: '" + s + "'");
+            try
+            {
+                s = reader.readLine();
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+            if(s.equals("n"))
+            {
+                System.out.print("Neue Meldung: ");
+                try
+                {
+                    s = reader.readLine();
+                    System.out.print("\n");
+                    nh.getObserver().addNoti(s);
+                }
+                catch (RuntimeException e)
+                {
+                    System.out.print("\n");
+                    System.out.println("Exception catched: " + e.getMessage());
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+            if(s.equals("t"))
+            {
+                System.out.print("Lebenszeit [in s]: ");
+                try
+                {
+                    s = reader.readLine();
+                    System.out.print("\n");
+                    double t = Double.parseDouble(s);
+                    System.out.print("Neue Meldung: ");
+                    s = reader.readLine();
+                    System.out.print("\n");
+                    nh.getObserver().addNoti(s,t);
+                }
+                catch (RuntimeException e)
+                {
+                    System.out.print("\n");
+                    System.out.println("Exception catched: " + e.getMessage());
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+            if(s.equals("c"))
+            {
+                Notification head = nh.popNoti();
+                if(head == null)
+                    System.out.println("Es gibt keine Daten in der Queue");
+                else
+                    System.out.println(head.debugString());
+            }
+            if(s.equals("r"))
+            {
+                System.out.print("Lösche Meldung: ");
+                try
+                {
+                    s = reader.readLine();
+                    nh.getObserver().removeNoti(s);
+                    System.out.print("\n");
+                }
+                catch (RuntimeException e)
+                {
+                    System.out.print("\n");
+                    System.out.println("Exception catched: " + e.getMessage());
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.println("IF-Block-Ende");
+        }
+        nh.stopMyObserver();
+        System.out.println("Easy Info-Handler Test beendet.");
+
     }
 }
