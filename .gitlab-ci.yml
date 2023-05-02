@@ -9,7 +9,6 @@ stages:
     - package
     - deploy
 
-
 cache:
   paths:
     - .m2/repository
@@ -23,7 +22,8 @@ build_job:
   script: 
     - echo "Maven compile started"
     - "mvn compile"
-
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
 test_job:
   stage: test
@@ -33,6 +33,8 @@ test_job:
   script: 
     - echo "Maven test started"
     - "mvn test"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  
 
 package_job:
   stage: package
@@ -42,6 +44,8 @@ package_job:
   script: 
     - echo "Maven packaging started"
     - "mvn package"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  
 
 
 Deploy_job:
@@ -51,3 +55,5 @@ Deploy_job:
 
   script: 
     - echo "Maven deploy started"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  
