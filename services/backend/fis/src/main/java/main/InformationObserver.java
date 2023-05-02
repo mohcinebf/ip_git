@@ -28,12 +28,16 @@ public class InformationObserver extends Thread
             System.out.println("Infoobserver has ended!");
     }
 
+    /**
+     * Konstruktor für den Observer
+     * @param myHandler Ein Oberserver ohne einen Handler macht keinen sinn.
+     */
     public InformationObserver(InformationHandeler myHandler)
     {
         this.myHandler = myHandler;
     }
 
-    /*
+    /**
         Methode die überprüft, ob die Queue eine Leerstellen hat. Falls ja wir die Queue um ein Objekt erweitert.
      */
     private void checkQueue()
@@ -42,7 +46,7 @@ public class InformationObserver extends Thread
             myHandler.fillQueueSlot();
     }
 
-    /*
+    /**
         Diese Methode wird langfristig den Kontakt mit der Zentrale regeln.
      */
     private void checkNewIncommingInfos()
@@ -50,7 +54,7 @@ public class InformationObserver extends Thread
 
     }
 
-    /*
+    /**
         Diese Methode wird langfristig den Kontakt mit der Sensorik regeln.
      */
     private void checkSensors()
