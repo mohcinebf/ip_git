@@ -16,7 +16,6 @@ package main;
  */
 public class InformationHandler extends Handler
 {
-    //public InformationObserver observer;
     private Scheduler scheduler;
     private static final int MAX_QUEUE_SIZE = 10;
     private static final int TEMP_INT_UPCOMMING_FREQ = 7; // soll später durch eine config eingelesen werden.
@@ -30,7 +29,6 @@ public class InformationHandler extends Handler
         Information info1 = new TextAdversiting("Lidl",5,1.3, 1.0,13);
         Information info2 = new TextAdversiting("Aldi",4,1.0, 1.0,12);
         Information info3 = new TextAdversiting("Rewe",1,0.9, 1.0,19);
-        //Information info4 = new UpcommingHalts(9);
         Information info5 = new TextAdversiting("Edeka",1,0.9, 0.0,26);
         Information info6 = new TextAdversiting("Penny",1,0.3, 1.0,7);
         Information info7 = new TextAdversiting("Netto",1,0.2, 1.0,14);
@@ -42,7 +40,6 @@ public class InformationHandler extends Handler
         scheduler.addNewInformation(info1);
         scheduler.addNewInformation(info2);
         scheduler.addNewInformation(info3);
-        //scheduler.addNewInformation(info4);
         scheduler.addNewInformation(info5);
         scheduler.addNewInformation(info6);
         scheduler.addNewInformation(info7);
@@ -79,12 +76,10 @@ public class InformationHandler extends Handler
         super(Information.class.getSimpleName(), MAX_QUEUE_SIZE);
         scheduler = new Scheduler();
         ini();
-        //observer = new InformationObserver(this);
-        //observer.start();
     }
 
     /**
-        Initalisiert den InformationHnadler mit den Startdaten
+        Initialisiert den InformationHandler mit den Startdaten
      */
     private void ini()
     {
@@ -93,12 +88,13 @@ public class InformationHandler extends Handler
     }
 
     /**
-        Alternative für den Core - dann muss er nicht selber Casten, kann den Handler aber auch nicht so einfach mit anderen Handelrn zusammen mixen.
+        Alternative für den Core - dann muss er nicht selber Casten, kann den Handler aber auch nicht so einfach mit anderen Handlern zusammen mixen.
         @return Kopfinformation oder null
      */
     public Information popInfo()
     {
         return (Information) this.pop();
+        //
     }
 
     /**
@@ -107,6 +103,7 @@ public class InformationHandler extends Handler
     private void fillQueueSlot()
     {
         queue.add(scheduler.getRandomInformation());
+        //
     }
 
     /**
@@ -115,6 +112,7 @@ public class InformationHandler extends Handler
     public void addInfoNewToScheduler(Information info)
     {
         scheduler.addNewInformation(info);
+        //
     }
 
     /**
@@ -143,7 +141,7 @@ public class InformationHandler extends Handler
         {
             if(ALLOW_DEBUGING_TO_CONSOL)
                 System.out.println("Infoobserver is running!");
-            checkNewIncommingInfos();
+            checkNewIncomingInfos();
             checkSensors();
             checkQueue();
             try
@@ -158,7 +156,7 @@ public class InformationHandler extends Handler
     }
 
     /**
-     Methode die überprüft, ob die Queue eine Leerstellen hat. Falls ja wir die Queue um ein Objekt erweitert.
+        Methode die überprüft, ob die Queue eine Leerstellen hat. Falls ja wir die Queue um ein Objekt erweitert.
      */
     private void checkQueue()
     {
@@ -167,15 +165,15 @@ public class InformationHandler extends Handler
     }
 
     /**
-     Diese Methode wird langfristig den Kontakt mit der Zentrale regeln.
+        Diese Methode wird langfristig den Kontakt mit der Zentrale regeln.
      */
-    private void checkNewIncommingInfos()
+    private void checkNewIncomingInfos()
     {
 
     }
 
     /**
-     Diese Methode wird langfristig den Kontakt mit der Sensorik regeln.
+        Diese Methode wird langfristig den Kontakt mit der Sensorik regeln.
      */
     private void checkSensors()
     {

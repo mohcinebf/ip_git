@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frontend</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/html" href="{{asset('style.css')}}">
+        <!--<link rel="stylesheet" href="/css/style.css">-->
+<style>
+    .header{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #4caf50;
+        padding: 10px;
+
+    }
+    .direction{
+        flex: 0.967;
+    }
+    .content{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        padding: 10px;
+        font-size: 30px;
+    }
+    .nextstop{
+        flex: 0.9;
+    }
+</style>
+</head>
+<body>
+    
+    <script type="text/html" src="/app.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <div class="container">
+        <div class="header">
+            <div class="line"></div>
+            <div class="direction"></div>
+            <div class="time"></div>
+        </div> 
+        <div class="content">
+            <div class="arrivaltime"></div>
+            <div class="nextstop"></div>
+        </div>
+    </div>
+    <script>
+        const socket = window.io();
+
+        socket.on('lineinfo',lineinfodata =>{
+        let line = document.getElementsByClassName('line')[0];
+        line.innerHTML = lineinfodata.name;    
+        let direction = document.getElementsByClassName('direction')[0];
+        direction.innerHTML = lineinfodata.dest;})
+
+        socket.on('nextstop',nextstopdata =>{
+        let nextstop = document.getElementsByClassName('nextstop')[0];
+        nextstop.innerHTML = nextstopdata.name;
+        let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
+        arrivaltime.innerHTML = nextstopdata.planned_time;})
+        
+    function aktualisiereUhrzeit() {
+        var jetzt = new Date();
+        var stunde = jetzt.getHours();
+        var minute = jetzt.getMinutes();
+        var sekunde = jetzt.getSeconds();
+
+        // Führende Nullen hinzufügen, wenn die Zahl kleiner als 10 ist
+        stunde = (stunde < 10 ? "0" : "") + stunde;
+        minute = (minute < 10 ? "0" : "") + minute;
+        
+        // Uhrzeit als String zusammensetzen
+        var uhrzeitString = stunde + ":" + minute;
+
+        // Element mit der ID "uhrzeit" finden und den Text setzen
+        var time = document.getElementsByClassName("time")[0];
+        time.innerHTML = uhrzeitString;
+    }
+
+      // Die Funktion einmal beim Laden der Seite ausführen
+    aktualisiereUhrzeit();
+
+      // Die Funktion alle 1000ms (1 Sekunde) wiederholen
+    setInterval(aktualisiereUhrzeit, 1000);
+    
+    </script>
+</body>
+</html>
