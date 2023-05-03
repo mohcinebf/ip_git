@@ -10,7 +10,6 @@ public class NotificationHandler extends Handler
     private ArrayList<Notification> notis; // Hier werden alle zurzeit aktiven Notis gespeichert.
     private static final double refreshTime = 0.3; // Angabe in Sekunden sollte später durch eine config gesetzt werden
     private static final int MAX_QUEUE_SIZE = 32; // sollte später durch eine config gesetzt werden
-    private NotificationObserver observer;
 
     /**
      * Konstruktor für den NotificationHandler. Wird von der Main oder Core aufgerufen, um das NotificationSystem zu starten.
@@ -27,8 +26,10 @@ public class NotificationHandler extends Handler
     private void ini()
     {
         notis = new ArrayList<>();
-        observer = new NotificationObserver(this,refreshTime);
-        observer.start();
+        //websocket kram
+
+        //observer = new NotificationObserver(this,refreshTime);
+        //observer.start();
     }
 
     /**
@@ -47,19 +48,22 @@ public class NotificationHandler extends Handler
      * Sobald der Core das Objekt übernimmt, ist es für das Notification-System nicht mehr existent.
      * @param t Das Zeitdekrement für die Notis
      */
-    public void timeUpdate(double t)
+    private void timeUpdate(double t)
     {
         int i = 0;
         while(i < notis.size())
         {
             Notification noti = notis.get(i);
+            //System.out.print("Noti:" + noti.hashValue+"\tWas:" + noti.lifetime.toString());
             if(noti.reduceMyLifetime(t))
             {
+                //System.out.println("Noti wird entfernt...");
                 noti.activ = false;
                 queue.add(noti);
                 notis.remove(i);
                 return; // der index darf hier nicht verschoben werden - daher auch eine while Schleife!
             }
+            //System.out.println("\tNow:" + noti.lifetime.toString());
             i++;
         }
     }
@@ -69,7 +73,7 @@ public class NotificationHandler extends Handler
      * @param hash Der hashwert der noti nach der gesucht werden soll
      * @return Null falls nicht existent sonst das gefundene Objekt
      */
-    public Notification findNoti(int hash)
+    private Notification findNoti(int hash)
     {
         for(int i = 0; i != notis.size(); i++)
             if(notis.get(i).hashValue == hash)
@@ -82,7 +86,7 @@ public class NotificationHandler extends Handler
      * @param noti Die Noti von der ausgehend gesucht wird.
      * @return Die gefundene Position oder null
      */
-    public Integer findNotiPos(Notification noti)
+    private Integer findNotiPos(Notification noti)
     {
         for(int i = 0; i != notis.size(); i++)
             if(notis.get(i).equals(noti))
@@ -123,17 +127,88 @@ public class NotificationHandler extends Handler
     /**
      * Öffentliche Methode zum Beenden des Observers.
      */
-    public void stopMyObserver()
+    public void stopMyThreads()
     {
-        this.observer.keepRunning=false;
+        this.keepRunning=false;
+        //
+    }
+
+    //-----------------------------------------------------------------------------------------
+    //Ehemaliger NotificationObserver
+
+    public boolean keepRunning = true;
+    long myTime;
+
+    /**
+     * Methode zum Starten des Threads
+     */
+    public void run()
+    {
+        while (keepRunning)
+        {
+            checkUpdates();
+            checkLifetimes();
+            try
+            {
+                sleep((long) refreshTime*1000);
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
-     * Methode die auschließlich für Testen gedacht. Damit kann der Observer von außen Daten bekommen.
-     * @return
+     Diese Methode wird dazu dienen die Websocket zu überprüfen. Bisher leer
      */
-    public NotificationObserver getObserver()
+    private void checkUpdates()
     {
-        return observer;
+        //Websocket kram
     }
+
+    /**
+     * Methode um die Lebenszeit von Objekten anzupassen.
+     */
+    private void checkLifetimes()
+    {
+        long now = System.currentTimeMillis();
+        long diff = now - myTime;
+        double d = (double)diff / 1000.0;
+        this.timeUpdate(d);
+        myTime = now;
+    }
+
+    /**
+     * Mit dieser Methode kann eine Nachricht später gelöscht werden und wird von checkUpdates aufgerufen werden. Bis auf Weiteres public, damit das System von der main aus gesteuert werden kann.
+     * @param msg Die Nachricht die erhalten wurde.
+     */
+    public void removeNotiOBS(String msg)
+    {
+        this.removeNoti(Notification.hashCode(msg));
+        //Wird entfernt, wenn kein Zugriff über main mehr gewünscht sein sollte
+    }
+
+    /**
+     * Mit dieser Methode kann eine Nachricht später erstellt werden und wird von checkUpdates aufgerufen werden. Bis auf Weiteres public, damit das System von der main aus gesteuert werden kann.
+     * @param msg Die Nachricht die erhalten wurde.
+     * @param lifetime Die Lebenszeit der Nachricht
+     */
+    public void addNoti(String msg, Double lifetime)
+    {
+        this.addNewNoti(new Notification(msg,true,lifetime));
+        //Wird entfernt, wenn kein Zugriff über main mehr gewünscht sein sollte
+    }
+
+    /**
+     * Mit dieser Methode kann eine Nachricht mit ewiger Lebensdauer später erstellt werden und wird von checkUpdates aufgerufen werden. Bis auf Weiteres public, damit das System von der main aus gesteuert werden kann.
+     * @param msg Die Nachricht die erhalten wurde.
+     */
+    public void addNoti(String msg)
+    {
+        this.addNewNoti(new Notification(msg,true,null));
+        //Wird entfernt, wenn kein Zugriff über main mehr gewünscht sein sollte
+    }
+
+
 }

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 /*
     Basisklasse für alle Handler. Beinhaltet die Queue sowie die Zugriffsfunktion auf diese für den Core.
  */
-public abstract class Handler
+public abstract class Handler extends Thread
 {
     protected LinkedList<Object> queue; // Die eigentliche Queue - bei unserer Anwendung ist eine LinkedList effizienter - füülen mit queue.add
     private int maxQueueSize; //Wie lang darf die Queue werden? Private, da sich nach dem Erstellen fest sein sollte.
