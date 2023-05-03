@@ -28,7 +28,8 @@ public class Main
     static void easyInfoHandlerTesting()
     {
         System.out.println("Easy Info-Handler Test gestartet.");
-        InformationHandeler ih = new InformationHandeler();
+        InformationHandler ih = new InformationHandler();
+        ih.start();
         String s = "";
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while ( !s.equals("q") )
@@ -59,7 +60,7 @@ public class Main
             if(s.equals("i"))
                 System.out.println("Queuesize: " + ih.getQueueSize());
         }
-        ih.stopMyObserver();
+        ih.stopMyThreads();
         System.out.println("Easy Info-Handler Test beendet.");
     }
 
@@ -76,6 +77,7 @@ public class Main
     {
         System.out.println("Easy Noti-Handler Test gestartet.");
         NotificationHandler nh = new NotificationHandler();
+        nh.start();
 
 
 
@@ -99,7 +101,7 @@ public class Main
                 {
                     s = reader.readLine();
                     System.out.print("\n");
-                    nh.getObserver().addNoti(s);
+                    nh.addNoti(s);
                 }
                 catch (RuntimeException e)
                 {
@@ -122,7 +124,7 @@ public class Main
                     System.out.print("Neue Meldung: ");
                     s = reader.readLine();
                     System.out.print("\n");
-                    nh.getObserver().addNoti(s,t);
+                    nh.addNoti(s,t);
                 }
                 catch (RuntimeException e)
                 {
@@ -148,7 +150,7 @@ public class Main
                 try
                 {
                     s = reader.readLine();
-                    nh.getObserver().removeNoti(s);
+                    nh.removeNotiOBS(s);
                     System.out.print("\n");
                 }
                 catch (RuntimeException e)
@@ -163,7 +165,7 @@ public class Main
             }
             System.out.println("IF-Block-Ende");
         }
-        nh.stopMyObserver();
+        nh.stopMyThreads();
         System.out.println("Easy Info-Handler Test beendet.");
 
     }

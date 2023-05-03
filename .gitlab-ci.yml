@@ -21,6 +21,7 @@ build_job:
 
   script: 
     - echo "Maven compile started"
+    - "pwd"
     - "mvn compile"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'

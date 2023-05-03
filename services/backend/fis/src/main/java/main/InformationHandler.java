@@ -14,9 +14,9 @@ package main;
     -popInfo - macht das Gleiche wie Handler.pop nur ist die Rpckgabe schon gecastet.
  @author Robin
  */
-public class InformationHandeler extends Handler
+public class InformationHandler extends Handler
 {
-    public InformationObserver observer;
+    //public InformationObserver observer;
     private Scheduler scheduler;
     private static final int MAX_QUEUE_SIZE = 10;
     private static final int TEMP_INT_UPCOMMING_FREQ = 7; // soll später durch eine config eingelesen werden.
@@ -61,7 +61,7 @@ public class InformationHandeler extends Handler
      @param DynmaicDataDura - Anzeigezeit für die dynmischen Daten
      @param LivestreamDura - Anzeigezeit für den Livestream
      */
-    private static void basicInfoFiller(InformationHandeler ih, Integer UpcommingHaltsFreq, Integer DynmaicDataFreq, Integer LivestreamFreq, Integer UpcommingHaltsDura, Integer DynmaicDataDura, Integer LivestreamDura)
+    private static void basicInfoFiller(InformationHandler ih, Integer UpcommingHaltsFreq, Integer DynmaicDataFreq, Integer LivestreamFreq, Integer UpcommingHaltsDura, Integer DynmaicDataDura, Integer LivestreamDura)
     {
         if(UpcommingHaltsFreq != null)
             ih.addInfoNewToScheduler(new UpcommingHalts(UpcommingHaltsFreq,UpcommingHaltsDura));
@@ -74,13 +74,13 @@ public class InformationHandeler extends Handler
     /**
         Konstruktor für den InformationHandler. Startet das ganze System für die Verarbeitung von Informationen. Muss einmal von der main aufgerufen werden und läuft dann bis zum Programmende.
      */
-    public InformationHandeler()
+    public InformationHandler()
     {
         super(Information.class.getSimpleName(), MAX_QUEUE_SIZE);
         scheduler = new Scheduler();
         ini();
-        observer = new InformationObserver(this);
-        observer.start();
+        //observer = new InformationObserver(this);
+        //observer.start();
     }
 
     /**
@@ -102,9 +102,9 @@ public class InformationHandeler extends Handler
     }
 
     /**
-        Methode die vom Observer aufgerufen wird, um die Queue zu füllen. Sollte niemals von einem anderen Klasse aufgerufen werden!
+        Methode um ein Objekt in die Queue zu legen. Oberserver überbleibsel.
      */
-    public void fillQueueSlot()
+    private void fillQueueSlot()
     {
         queue.add(scheduler.getRandomInformation());
     }
@@ -120,8 +120,65 @@ public class InformationHandeler extends Handler
     /**
         Öffentliche Methode um den Thread zu beenden. Für ein sauberes clean-up.
      */
-    public void stopMyObserver()
+    public void stopMyThreads()
     {
-        observer.keepRunning = false;
+        this.keepRunning = false;
+    }
+
+
+    // Ehemalige InformationObserverklasse
+
+    private static final int THREAD_SLEEPING_TIME_IN_SECONDS = 2; // Es gibt keinen Grund, warum dieser Thread die ganze Zeit auf voller Power laufen sollte.
+    private static final boolean ALLOW_DEBUGING_TO_CONSOL = false;
+    public boolean keepRunning = true;
+
+    /**
+     * Startet den Thread zu überwachen, füllen und lesen der eigenen Websocket sowie der eigenen Queue.
+     */
+    public void run()
+    {
+        if(ALLOW_DEBUGING_TO_CONSOL)
+            System.out.println("Infoobserver has started!");
+        while(keepRunning)
+        {
+            if(ALLOW_DEBUGING_TO_CONSOL)
+                System.out.println("Infoobserver is running!");
+            checkNewIncommingInfos();
+            checkSensors();
+            checkQueue();
+            try
+            {
+                sleep(THREAD_SLEEPING_TIME_IN_SECONDS*1000);
+            }
+            catch (InterruptedException e) // Weil man es mal wieder fangen muss....
+            {}
+        }
+        if(ALLOW_DEBUGING_TO_CONSOL)
+            System.out.println("Infoobserver has ended!");
+    }
+
+    /**
+     Methode die überprüft, ob die Queue eine Leerstellen hat. Falls ja wir die Queue um ein Objekt erweitert.
+     */
+    private void checkQueue()
+    {
+        if(this.getMaxQueueSize() > this.getQueueSize())
+            this.fillQueueSlot();
+    }
+
+    /**
+     Diese Methode wird langfristig den Kontakt mit der Zentrale regeln.
+     */
+    private void checkNewIncommingInfos()
+    {
+
+    }
+
+    /**
+     Diese Methode wird langfristig den Kontakt mit der Sensorik regeln.
+     */
+    private void checkSensors()
+    {
+
     }
 }
