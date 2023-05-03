@@ -21,15 +21,11 @@ public class NotificationHandler extends Handler
     }
 
     /**
-     * Initialisierungsfunktion, welche unteranderem den Observer-Thread startet
+     * Initialisierungsfunktion
      */
     private void ini()
     {
         notis = new ArrayList<>();
-        //websocket kram
-
-        //observer = new NotificationObserver(this,refreshTime);
-        //observer.start();
     }
 
     /**
@@ -39,6 +35,7 @@ public class NotificationHandler extends Handler
     public Notification popNoti()
     {
         return (Notification) pop();
+        //
     }
 
     /**
@@ -82,7 +79,7 @@ public class NotificationHandler extends Handler
     }
 
     /**
-     * Methode zum finden einer Position zu einer Noti
+     * Methode zum Finden einer Position zu einer Noti
      * @param noti Die Noti von der ausgehend gesucht wird.
      * @return Die gefundene Position oder null
      */
@@ -99,7 +96,7 @@ public class NotificationHandler extends Handler
      * @param newNoti Die neue Meldung
      * @throws RuntimeException Falls die neue Notification inaktiv ist oder bereits in der Liste existiert.
      */
-    public void addNewNoti(Notification newNoti)
+    private void addNewNoti(Notification newNoti)
     {
         if(!newNoti.activ)
             throw new RuntimeException("Error: An inactiv Notification cannot be added a new! Maybe you wanted to use 'deleteNoti'?");
@@ -114,7 +111,7 @@ public class NotificationHandler extends Handler
      * @param hash Der hash an dem die gesuchte Notification identifiziert wird
      * @throws RuntimeException Falls die Notification nicht gefunden werden konnte
      */
-    public void removeNoti(int hash)
+    private void removeNoti(int hash)
     {
         Notification noti = findNoti(hash);
         if(noti == null)
@@ -137,7 +134,7 @@ public class NotificationHandler extends Handler
     //Ehemaliger NotificationObserver
 
     public boolean keepRunning = true;
-    long myTime;
+    private long myTime;
 
     /**
      * Methode zum Starten des Threads

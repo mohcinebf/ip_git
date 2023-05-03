@@ -11,7 +11,8 @@ public class Main
         System.out.println("Hello World!");
 
         //easyInfoHandlerTesting();
-        easyNotiHandlerTesting();
+        //easyNotiHandlerTesting();
+        easyEmerHandlerTesting();
 
         System.out.println("Reached end of main");
     }
@@ -167,6 +168,60 @@ public class Main
         }
         nh.stopMyThreads();
         System.out.println("Easy Info-Handler Test beendet.");
+    }
 
+    /**
+     * Einfache Testmethode für das Emergency-System.
+     * Füllt die PUBLIC_TEMP_WEBSOCKET_REPLACMENT_DUMMY-ArrayList direkt mit den Notfallmeldung.
+     * q Beendet den Test
+     * c Ersetzt den Coreaufruf und popt die Queue
+     * s Fügt dem System einen Notfall zu. Falls die Nachricht gleich einer Existeten ist, wird die Nachricht als Remove interpretiert.
+     * l Gibt zurück wie viele Elemente in der Queue sind.
+     */
+    static void easyEmerHandlerTesting()
+    {
+        System.out.println("Easy Emer-Handler Test gestartet.");
+        EmergencyHandler eh = new EmergencyHandler();
+        eh.start();
+        String s = "";
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        while ( !s.equals("q") )
+        {
+            //System.out.println("s: '" + s + "'");
+            try
+            {
+                s = reader.readLine();
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+            if(s.equals("s"))
+            {
+                try
+                {
+                    System.out.print("MSG des Notfalls: ");
+                    s = reader.readLine();
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+                eh.PUBLIC_TEMP_WEBSOCKET_REPLACMENT_DUMMY.add(s);
+                System.out.print("\n");
+            }
+            if(s.equals("l"))
+                System.out.println("Queuesize: " + eh.getQueueSize());
+            if(s.equals("c"))
+            {
+                Emergency emer = eh.popEmer();
+                if(emer != null)
+                    System.out.println("Queuehead gefunden:\tHash: " + emer.hashValue + "\tActiv:" + emer.activ + '.');
+                else
+                    System.out.println("Die Queue ist leer.");
+            }
+        }
+        eh.stopMyThreads();
+        System.out.println("Easy Info-Handler Test beendet.");
     }
 }
