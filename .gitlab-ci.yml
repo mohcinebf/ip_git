@@ -22,7 +22,7 @@ build_job:
   script: 
     - echo "Maven compile started"
     - "pwd"
-    - "mvn compile"
+    - "mvn compile -f services/backend/fis"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
@@ -33,7 +33,7 @@ test_job:
 
   script: 
     - echo "Maven test started"
-    - "mvn test"
+    - "mvn test -f services/backend/fis"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  
 
@@ -44,7 +44,7 @@ package_job:
 
   script: 
     - echo "Maven packaging started"
-    - "mvn package"
+    - "mvn package -f services/backend/fis"
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'  
 
