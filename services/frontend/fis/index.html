@@ -42,10 +42,13 @@
             <div class="line"></div>
             <div class="direction"></div>
             <div class="time"></div>
-        </div> 
-        <div class="content">
-            <div class="arrivaltime"></div>
-            <div class="nextstop"></div>
+        </div>
+        <div>
+            <div class="content">
+                <div class="arrivaltime"></div>
+                <div class="nextstop"></div>
+            </div>
+            <div class="information"></div>
         </div>
     </div>
     <script>
@@ -62,6 +65,19 @@
         nextstop.innerHTML = nextstopdata.name;
         let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
         arrivaltime.innerHTML = nextstopdata.planned_time;})
+
+        socket.on('information',infodata =>{
+            let info = document.getElementsByClassName('information')[0];
+            if (infodata.header === 'folgendeHalte'){
+                info.innerHTML = getTable(infodata.message, []);
+            }
+            else if (infodata.header === 'anschluesse'){
+                info.innerHTML = getTable(infodata.message, ['Abfahrt', 'Bus', 'Richtung']);
+            }
+            else{
+                info.innerHTML = "Something's wrong here..." ;
+            }
+        })
         
     function aktualisiereUhrzeit() {
         var jetzt = new Date();
@@ -80,6 +96,26 @@
         var time = document.getElementsByClassName("time")[0];
         time.innerHTML = uhrzeitString;
     }
+
+        function getTable(message, ueberschrift){
+            let text = "<table>";
+            if(ueberschrift.length) {
+                text += "<tr>";
+                for (let u in ueberschrift) {
+                    text += "<th>" + ueberschrift[u] + "</th>";
+                }
+                text += "</tr>";
+            }
+
+            for (let s in message){
+                text += "<tr>";
+                for (let t in message[s]){
+                    text += "<td>" + message[s][t] + "</td>";
+                }
+                text += "</tr>";
+            }
+            return text;
+        }
 
       // Die Funktion einmal beim Laden der Seite ausführen
     aktualisiereUhrzeit();

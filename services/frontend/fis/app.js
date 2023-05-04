@@ -38,5 +38,5 @@ io.on('connection',socket =>{
     })
     socket.emit('lineinfo',{name:'Linie 13',dest:'Lünberg - Wolfsburg' })
     socket.emit('nextstop',{name:'Herrmannplatz',planned_time:'12:00' })
-    
+    socket.emit('information',{type:'table',header:'anschluesse',message:[['12:03', '13A', 'Kaiserplatz'], ['12:05', '24', 'Hansemannplatz']]})
 })
