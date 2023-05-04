@@ -12,12 +12,11 @@ package main;
 
 public class UpcommingHalts extends Information
 {
-    public UpcommingHalts(int freq, int duration)
+    public UpcommingHalts(int freq)
     {
         this.type = "Fahrstrecken_Anzeige";
         this.id = Information.giveNewId();
         this.isSingle = true;
         this.frequency = freq;
-        this.duration = duration;
     }
 }
