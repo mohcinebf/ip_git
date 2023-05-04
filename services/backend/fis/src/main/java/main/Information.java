@@ -1,5 +1,5 @@
 package main;
-/*
+/**
     Hauptklasse für alle Arten von Informationen. Informationen sind alles, was nach dem Anforderungsblatt mit geringster (3) Priorität angezeigt werden kann.
     Diese Oberklasse ist bewusst abstrakt, sodass man z.B. im Scheduler alle Information gleich behandeln kann.
     Jede Information hat ein type Attribut, welche immer auf die erste Stufe in der Hierarchie der Abstraktion der Informationsklassen zeigt (Werbung, Fahrstrecke, Dyn.-Daten, ...). Man kann darüber oder über die direkte Klassenabfrage von Java dann zwischen den Klassen einfach
@@ -10,6 +10,7 @@ package main;
     Die Logik um aus einer Information dann die .json Struktur zu für die Überreichung an das Frontend zu machen könnte man entweder im Core machen, welcher
     Information-Objekte zugeschickt bekommt, oder man macht hier eine abstrakte Methode und die jeweils unterste Klasse überschreibt diese Methode entsprechend so, wie ihre Daten überschrieben werden müssen.
     Eleganter und wahrscheinlich effizienter wäre letzteres, jedoch gibt es gerade bei den dynamischen Informationen (UpcommingHalts, Live-Stream, Dynmische Daten) die frage, wie man mit einer Funktion aus dieser Klasse an die entsprechenden Daten kommen sollt, die wahrscheinlich nur der Core kennt.
+    @author Robin
  */
 public abstract class Information
 {
@@ -23,12 +24,13 @@ public abstract class Information
                          // Es wäre daher sinnvoll den unwichtigsten Anzeigetypus zu bestimmen (warscheinlich Live-Stream oder dynmische Daten) und auf eins zu setzen und die Freq aller anderen als relative Häufigkeit dieses Typus gegen diese Klasse zu verstehen
     public Double startingBaseValue = null; // Wird nur durch Erbendeklasse gesetzt wenn nicht Single. Bei nicht Single irrelevant bzw. nicht definiert
     public Double startingActiv = null;     // Wird nur durch Erbendeklasse gesetzt wenn nicht Single. Bei nicht Single irrelevant bzw. nicht definiert
+    public int duration; // ANzeigezeit in Sekunden
 
     private static int lastUsedID = 0; // Um die ID unique zu machen
 
-    /*
+    /**
         Funktion um eine eindeutige ID bei der Erstellung zuzuweisen.
-        return ID für ein neues Objekt
+        @return ID für ein neues Objekt
      */
     protected static int giveNewId()
     {
@@ -37,18 +39,18 @@ public abstract class Information
         return  i;
     }
 
-    /*
-        Funktion die den Typen als String zurück gibt. Bei den Meistenklasse wird das identisch zu dem Attribut sein, aber nicht bei Werbung. Bei Werbung gibt diese Funktion zusätzlich noch den Subtypen an, wäre Type nur 'Werbung' liefern wird.
-        return this.type + (:subtype)?
+    /**
+        Funktion die den Typen als String zurückgibt. Bei den meisten Klasse wird das identisch zu dem Attribut sein, aber nicht bei Werbung. Bei Werbung gibt diese Funktion zusätzlich noch den Subtypen an, wäre Type nur 'Werbung' liefern wird.
+        @return this.type + (:subtype)?
      */
     public String getType() // Dient als Ausgabe für den Scheduler Prototypen.
     {
         return type;
     }
 
-    /*
+    /**
         Funktion die einen debugString erstellt, der Aussage über dieses Objekt macht.
-        return String ID + getType
+        @return String ID + getType
      */
     public String debugString()
     {

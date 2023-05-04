@@ -8,7 +8,7 @@ import java.util.Collections;
  */
 public class StaticScheduler
 {
-    /*
+    /**
         Wird geschmissen, falls man versucht dem Scheduler eine nicht singuläre Information zugeben, welcher dieser bereits kennt.
      */
     public static class MainCategoryAlreadyExists extends RuntimeException
@@ -27,10 +27,10 @@ public class StaticScheduler
 
     //Methoden
 
-    /*
+    /**
         Methode um von außen eine neue Information zum Scheduler hinzuzufügen.
-        throws MainCategoryAlreadyExists - Dieses Objekt liegt bereits in der Queue
-        info - Information die neu Hinzugefügt werden soll.
+        @throws MainCategoryAlreadyExists Dieses Objekt liegt bereits in der Queue
+        @param info Information die neu Hinzugefügt werden soll.
      */
     public void addNewMainCategory(Information info)
     {
@@ -45,7 +45,7 @@ public class StaticScheduler
         shuffleQueue();
     }
 
-    /*
+    /**
         Methode um das Array neu zu mischen. Wird ausgeführt wenn pos die Arraygrenze erreicht oder wenn sich das Array generell verändern (neue Info).
      */
     private void shuffleQueue()
@@ -55,10 +55,10 @@ public class StaticScheduler
         findAndKillArtifacts();
     }
 
-    /*
+    /**
         Öffentliche Methode um das vorderste Element der Queue zu erhalten, wobei dieses auch entfernt wird.
-        throws RuntimeException - queue ist leer
-        Return: ID Type einer Hauptkategorie - z.B. Werbung
+        @throws RuntimeException Queue ist leer
+        @return ID Type einer Hauptkategorie - z.B. Werbung
      */
     public Information popHead()
     {
@@ -72,7 +72,7 @@ public class StaticScheduler
         return i;
     }
 
-    /*
+    /**
         Methode um nach dem shuffel Artefakte zu töten. Artefakte sind Unschönheiten. Einziges bisher behandeltes Artefakt wäre eine direkte Wiederholung derselben Information im Array. Dies ist nur möglich falls myHeighestFrequency < queue.size()/2.
      */
     private void findAndKillArtifacts()

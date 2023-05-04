@@ -5,7 +5,7 @@ import java.util.Collections;
 import  java.util.Random;
 import java.math.*;
 
-/*
+/**
     Ein dynamischer Scheduler sucht für einen bestimmten Typ (z.B. Werbung) einen Bestimmte Subinformation. Der DS wird für jede Information erstellt, die isSingle == false ist.
  */
 public class DynamicScheduler
@@ -14,7 +14,7 @@ public class DynamicScheduler
     //private static final boolean KNOWN_NEW_INFO_IS_AN_UPDATE = false; //Wird erstmal strengstens verboten und Duplikat werden Exceptions erzeugen
     private static final boolean PRINT_PROBABILITIES_FOR_NEXT_TURN_TO_CONSOLE_FOR_DEBUG_REASONS = false; // ACHTUNG FALLS TRUE WIRD DAS DIE KONSOLE RICHTIG VOLLMÜLLEN! NUR FÜR TESTZWECKE MIT DEM SCHEDULER
 
-    /*
+    /**
         Subklasse um die Mathematik für die Wahrscheinlichkeit einer Information besser zu verwalten.
      */
     private class Subobject
@@ -32,7 +32,7 @@ public class DynamicScheduler
         public int variint; //Gesamtwahrscheinlichkeits Produkt als Integer. Java kennt kein unsigned; daher mit Vorzeichen
         public int id; //Damit wird später das konkrete Element identifiziert - könnte z.B. der Pfad auf ein bestimmte Werbung sein.
 
-        /*
+        /**
             Test Konstruktor - nicht mehr aktiv in Benutzung
          */
         public Subobject(int id, double basevalue, double activ) // für Dirtytesting
@@ -45,8 +45,9 @@ public class DynamicScheduler
             this.id = id;                           // Siehe oben
         }
 
-        /*
-            Konstruktor der aus einer Information ein Subob macht
+        /**
+         * Konstruktor der aus einer Information ein Subob macht
+         * @param info Die Info zu der dieses Subob erstellt werden soll.
          */
         public Subobject(Information info) // Reguläre Nutzung
         {
@@ -58,7 +59,7 @@ public class DynamicScheduler
             this.id = info.id;                           // Siehe oben
         }
 
-        /*
+        /**
             Einfache Fuktion um das variprod zu bestimmen und dieses dann auf einen Integer abzubilden.
          */
         public void calcMyVariint()
@@ -67,10 +68,10 @@ public class DynamicScheduler
             variint = (int)Math.round(ROUNDING_ACCURACY_FOR_VARIINT * variprod);
         }
 
-        /*
+        /**
             Funktion um das double activ in ein bool umzuwandeln.
-            throws - RuntimeException falls Wert weder 1 noch 0.
-            return - false falls activ == 0 sonst 1
+            @throws RuntimeException Falls Wert weder 1 noch 0.
+            @return false falls activ == 0.0 und true falls activ == 1.0
          */
         public boolean isActiv()
         {
@@ -91,17 +92,17 @@ public class DynamicScheduler
     private Random random = new Random();// Die aktuelle Zufallsfolge
     public String forTyp;// Für welchen Informationtypen dieser DS arbeitet
 
-    /*
-        Kann von den Testern später benutzt werden um Unittests zu erstellen
+    /**
+        Kann von den Testern später benutzt werden, um Unittests zu erstellen
      */
     public void setSeed(long newSeed)
     {
         random.setSeed(newSeed);
     }
 
-    /*
-        Hauptfuktion die aus allen Subobs ein zufälliges auswählt
-        return Ein zufälliges Subobjekt aus allen für dieses DS existierend Subobjekten
+    /**
+        Hauptfuktion die aus allen Subobs ein zufälliges auswählt.
+        @return Ein zufälliges Subobjekt aus allen für diesen DS existierend Subobjekten
      */
     private Subobject getRandomSubobj()
     {
@@ -128,9 +129,9 @@ public class DynamicScheduler
         return subobs.get(at);
     }
 
-    /*
-        Funktion um die varivalues allers subobs nach einer erfolgreichen Ziehung anzupassen.
-        toReduce - Das Objekt, welches gezogen wurde, und entsprechen in seiner Wahrscheinlichkeit verringert wird, während alle anderen eine entsprechende gewichtete Erhöhung erhalten.
+    /**
+        Funktion um die varivalues aller subobs nach einer erfolgreichen Ziehung anzupassen.
+        @param toReduce Das Objekt, welches gezogen wurde, und entsprechen in seiner Wahrscheinlichkeit verringert wird, während alle anderen eine entsprechende gewichtete Erhöhung erhalten.
      */
     private void updateVarivalues(Subobject toReduce)
     {
@@ -146,6 +147,11 @@ public class DynamicScheduler
             printProbabilities();
     }
 
+    /**
+     * Methode die überprüft ob die Information schon bekannt ist.
+     * @param info Die Information nach der gesucht wird
+     * @return true falls die Information bekannt ist, sonst false
+     */
     public boolean infoIsKnown(Information info)
     {
         if (findInfoIfKnown(info.id)==null)
@@ -154,10 +160,10 @@ public class DynamicScheduler
             return  true;
     }
 
-    /*
+    /**
         Billige Suchmethode um eine Info von einer ID zu finden: Meistens für die Zuordnung Subob-->Info
-        infoID - ID nach der gesucht wird
-        return Gefunde Indexposition für die Information oder null falls nicht gefunden.
+        @param infoID ID nach der gesucht wird
+        @return Gefunde Indexposition für die Information oder null falls nicht gefunden.
      */
     private Integer findInfoIfKnown(int infoID)
     {
@@ -167,10 +173,10 @@ public class DynamicScheduler
         return  null;
     }
 
-    /*
+    /**
         Billige Suchmethode um eine Info von einer ID zu finden: Meistens für die Zuordnung Info-->Subob
-        id - Nach welcher ID gesucht werden soll
-        return null falls nichts gefunden sonst das entsprechende Subob
+        @param id Nach welcher ID gesucht werden soll
+        @return null falls nichts gefunden sonst das entsprechende Subob
      */
     private Subobject getSubobByID(int id)
     {
@@ -180,10 +186,10 @@ public class DynamicScheduler
         return  null;
     }
 
-    /*
+    /**
         Billige Suchmethode um eine Info von einer ID zu finden: Meistens für die Zuordnung Subob-->Info
-        infoID - ID nach der gesucht wird
-        return Gefunde Information oder null falls nichts gefunden.
+        @param id ID nach der gesucht wird
+        @return Gefunde Information oder null falls nichts gefunden.
      */
     private Information getInfoForSpecificSubobID(int id)
     {
@@ -193,11 +199,11 @@ public class DynamicScheduler
         return  null;
     }
 
-    /*
+    /**
         Methode um zu einer Information boostvalue und/oder avtiv neu zu setzen.
-        info - Ausgehend von der ID dieser info wird das entsprechende subob ermittelt und angepasst
-        boostvalue - der neue boostvalue auf den das subob gesetzt werden soll
-        activ - der neue activ auf den das subob gesetzt werden soll
+        @param info Ausgehend von der ID dieser info wird das entsprechende subob ermittelt und angepasst
+        @param boostvalue der neue boostvalue auf den das subob gesetzt werden soll
+        @param activ der neue activ auf den das subob gesetzt werden soll
      */
     public void updateSubobValuesByExtern(Information info, int boostvalue, int activ)
     {
@@ -208,10 +214,10 @@ public class DynamicScheduler
         subob.activ = activ;
     }
 
-    /*
+    /**
         Methode um dem DS neue Information hinzuzufügen. Erstellt die Subobs
-        throws RuntimeException - Falls Information schon bekannt (Duplikat)
-        info - die neue Information
+        @throws RuntimeException Falls Information schon bekannt (Duplikat)
+        @info Die neue Information
      */
     public void addNewInfo(Information info)
     {
@@ -228,19 +234,19 @@ public class DynamicScheduler
         myInfos.add(info);
     }
 
-    /*
-        Konstruktor - Setzt die forType Variable
-        information - Von dieser Information wird der String für die forType Variabel kopiert
+    /**
+        Konstruktor: Setzt die forType Variable
+        @param information Von dieser Information wird der String für die forType Variabel kopiert
      */
     public DynamicScheduler(Information information)
     {
         this.forTyp = information.type; // ES MUSS DIREKT DER TYPE UND NICHT DIE GET TYPE SEIN!!!
     }
 
-    /*
+    /**
         Öffentliche Funktion um ein zufällige Information zu bekommen. Da intern ein zufälliges Subob gesucht wird, wird hier auch vom Subob zurück zur Info konvetiert.
-        throws RuntimeException - falls es keine Subobs gibt
-        Information - Zufälliges Ergebnis
+        @throws RuntimeException - falls es keine Subobs gibt
+        @return Zufällige Information
      */
     public Information getRandomInfo()
     {
@@ -261,7 +267,7 @@ public class DynamicScheduler
         return  getInfoForSpecificSubobID(subob.id);
     }
 
-    /*
+    /**
         Debugausgabe Funktion - nicht effizient und müllt die Konsole voll. Nur für Debugzwecke gedacht.
      */
     private String printProbabilities()
