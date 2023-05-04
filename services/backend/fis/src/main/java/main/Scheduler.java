@@ -2,10 +2,8 @@ package main;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
-    Es gibt im InformationHandler genau ein Objekt dieser Klasse.
-    Verwaltet den Zufall um die Queue des Handlers zu befüllen.
-    Arbeitet intern mit zwei verschiedenen System - dem statischen und dem dynmischen Scheduler.
+/*
+    Es gibt ein Programm genau ein Objekt dieser Klasse.
  */
 public class Scheduler
 {
@@ -13,10 +11,10 @@ public class Scheduler
     private ArrayList<DynamicScheduler> secondSchedulers = new ArrayList<>(); // Die DSs
     private StaticScheduler staticscheduler = new StaticScheduler();          // Der SS
 
-    /**
+    /*
         Öffentliche Methode um eine neue Information hinzuzufügen. Wird das gleiche Typ nochmal hinzugefügt, wird geprüft ob der Typ singulär ist. Falls ja wird eine Exception geworfen und sonst wird die Info an einen DS weiter geleitet. Im letzteren fall wird die Freq von der neuen Info nicht genutzt.
-        @throws RuntimeException Dalls ein Duplikat eingefügt werden soll.
-        @param info Die neue Information
+        throws RuntimeException - falls ein Duplikat eingefügt werden soll.
+        info - Die neue nformation
      */
     public void addNewInformation(Information info)
     {
@@ -52,10 +50,10 @@ public class Scheduler
         }
     }
 
-    /**
+    /*
         Öffentliche Methode um eine zufällige Information zu erhalten.
-        @throws RuntimeException Falls keine Information vorliegen.
-        @return Zufälliges Informations-Objekt welches zuvor eingefügt wurde. Es wird eine Referenz und keine Kopie zurückgegegeben!
+        throws RuntimeExeption - Falls keine Information vorliegen.
+        return - Zufälliges Informations Objekt welches zuvor eingefügt wurde. Es wird eine Referenz und keine Kopie zurückgegegeben
      */
     public Information getRandomInformation()
     {
@@ -70,12 +68,12 @@ public class Scheduler
         return ds.getRandomInfo();
     }
 
-    /**
+    /*
     Funktion um boostValue oder Activ eines Subobjekts zu verändern, da diese durch äußeres erreicht werden müssen.
-    @throws RuntimeException Falls Information nicht gefunden werden konnte
-    @param info Zu welcher Information Attribute upgedated werden sollen
-    @param newBoostValue Auf welchen Wert der boostvalue gesetzt werden soll
-    @param newActivValue Auf welchen Wert der activ gesetzt werden soll
+    Throws: RuntimeException - Falls Information nicht gefunden werden konnte
+    info - zu welcher Information Attribute upgedated werden sollen
+    newBoostValue - auf welchen Wert der boostvalue gesetzt werden soll
+    newActivValue - auf welchen Wert der activ gesetzt werden soll
      */
     public void updateValuesForInfo(Information info, int newBoostValue, int newActivValue)
     {
@@ -85,10 +83,9 @@ public class Scheduler
         ds.updateSubobValuesByExtern(info,newBoostValue,newActivValue);
     }
 
-    /**
-        Funktion um den DS zu einem gegeben Type zu finden
-        @param type String des Typen nachdem gesucht wird.
-        @return Den gefunden DS oder null
+    /*
+        Funktion um den DS zu einem Type zu finden
+        return Den gefunden DS oder null
      */
     private DynamicScheduler getDynamicSchedulerForThisType(String type)
     {
