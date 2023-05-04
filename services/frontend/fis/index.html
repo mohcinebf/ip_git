@@ -30,9 +30,69 @@
     .nextstop{
         flex: 0.9;
     }
+    #message-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        overflow: hidden;
+        width: 1500px;
+        height: 30px;
+        border: 10px solid #ccc;
+
+
+    }
+
+    #message {
+        position: absolute;
+        white-space: nowrap;
+        font-size: 20px;
+        color: #333;
+        right: 0;
+        animation: marquee 20s linear infinite;
+
+    }
+
+    @keyframes marquee {
+        from {
+            right: 100%;
+        }
+        to {
+            right: -100%;
+        }
+    }
 </style>
 </head>
 <body>
+<div id="message-container">
+    <span id="message">Umleitung ueber Duesseldorf Ring/ Duesseldorferstrasse gesperrt / AAchenerstrasse gesperrt</span>
+</div>
+<script>
+    const message = document.getElementById("message");
+    const container = document.getElementById("message-container");
+
+    // Calculer la largeur du message
+    const messageWidth = message.offsetWidth;
+
+    // Calculer la largeur du conteneur
+    const containerWidth = container.offsetWidth;
+
+    // Modifier la durée de l'animation en fonction de la largeur du message
+    const animationDuration = (messageWidth + containerWidth) * 10;
+
+    // Ajouter la durée de l'animation au style du message
+    message.style.animationDuration = animationDuration + "ms";
+
+    // Fonction pour démarrer ou redémarrer l'animation
+    function startAnimation() {
+        message.style.animation = "none";
+        message.offsetHeight;
+        message.style.animation = null;
+    }
+
+    // Démarrer l'animation
+    startAnimation();
+
+</script>
     
     <script type="text/html" src="/app.js"></script>
     <script src="/socket.io/socket.io.js"></script>
