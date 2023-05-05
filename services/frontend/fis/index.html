@@ -3,97 +3,9 @@
 <head>
     <title>Frontend</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/html" href="{{asset('style.css')}}">
-        <!--<link rel="stylesheet" href="/css/style.css">-->
-<style>
-    .header{
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #4caf50;
-        padding: 10px;
-
-    }
-    .direction{
-        flex: 0.967;
-    }
-    .content{
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        background-color: white;
-        padding: 10px;
-        font-size: 30px;
-    }
-    .nextstop{
-        flex: 0.9;
-    }
-    #message-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        overflow: hidden;
-        width: 1500px;
-        height: 30px;
-        border: 10px solid #ccc;
-
-
-    }
-
-    #message {
-        position: absolute;
-        white-space: nowrap;
-        font-size: 20px;
-        color: #333;
-        right: 0;
-        animation: marquee 20s linear infinite;
-
-    }
-
-    @keyframes marquee {
-        from {
-            right: 100%;
-        }
-        to {
-            right: -100%;
-        }
-    }
-</style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<div id="message-container">
-    <span id="message">Umleitung ueber Duesseldorf Ring/ Duesseldorferstrasse gesperrt / AAchenerstrasse gesperrt</span>
-</div>
-<script>
-    const message = document.getElementById("message");
-    const container = document.getElementById("message-container");
-
-    // Calculer la largeur du message
-    const messageWidth = message.offsetWidth;
-
-    // Calculer la largeur du conteneur
-    const containerWidth = container.offsetWidth;
-
-    // Modifier la durée de l'animation en fonction de la largeur du message
-    const animationDuration = (messageWidth + containerWidth) * 10;
-
-    // Ajouter la durée de l'animation au style du message
-    message.style.animationDuration = animationDuration + "ms";
-
-    // Fonction pour démarrer ou redémarrer l'animation
-    function startAnimation() {
-        message.style.animation = "none";
-        message.offsetHeight;
-        message.style.animation = null;
-    }
-
-    // Démarrer l'animation
-    startAnimation();
-
-</script>
-    
     <script type="text/html" src="/app.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     
@@ -111,52 +23,90 @@
             <div class="information"></div>
         </div>
     </div>
+    <div id="message-container">
+        <span id="message"></span>
+    </div>
+
     <script>
         const socket = window.io();
+        var notifs = [];
 
+        //Verarbeitung der Informationen für Bereich 1 mit Informationen ueber den aktuellen Bus.
+        //Stellt 'lineinfo' dar, mit:
+        //name: string          Name/Nummer des Busses
+        //direction: string     Richtung, in die der Bus faehrt
         socket.on('lineinfo',lineinfodata =>{
-        let line = document.getElementsByClassName('line')[0];
-        line.innerHTML = lineinfodata.name;    
-        let direction = document.getElementsByClassName('direction')[0];
-        direction.innerHTML = lineinfodata.dest;})
+            let line = document.getElementsByClassName('line')[0];
+            line.innerHTML = lineinfodata.name;
+            let direction = document.getElementsByClassName('direction')[0];
+            direction.innerHTML = lineinfodata.dest;
+        })
 
+        //Verarbeitung der Informationen für Bereich 2 mit Informationen ueber die naechste Haltestelle.
+        //Stellt 'nextop' dar, mit:
+        //name: string              Name der Haltestelle
+        //planned_time: string      Vorraussichtliche Ankunftszeit
         socket.on('nextstop',nextstopdata =>{
-        let nextstop = document.getElementsByClassName('nextstop')[0];
-        nextstop.innerHTML = nextstopdata.name;
-        let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
-        arrivaltime.innerHTML = nextstopdata.planned_time;})
+            let nextstop = document.getElementsByClassName('nextstop')[0];
+            nextstop.innerHTML = nextstopdata.name;
+            let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
+            arrivaltime.innerHTML = nextstopdata.planned_time;
+        })
 
+        //Verarbeitung der Informationen für Bereich 2. Darstellung abhaengig von den uebergebenen Daten.
+        //Stellt 'information' dar, mit:
+        //type: string              Datentyp der uebergebenen message
+        //header: string            Art der Anzeige(haltestellen, anschluesse, werbung, etc.)
+        //message: string[][]       Die Darzustellenden Informationen
         socket.on('information',infodata =>{
             let info = document.getElementsByClassName('information')[0];
-            if (infodata.header === 'folgendeHalte'){
+            //Darstellung der folgenden Haltestellen
+            if (infodata.header === 'haltestellen'){
                 info.innerHTML = getTable(infodata.message, []);
             }
+            //Darstellung der Anschluesse
             else if (infodata.header === 'anschluesse'){
                 info.innerHTML = getTable(infodata.message, ['Abfahrt', 'Bus', 'Richtung']);
             }
+            //Fehler bei der Uebergabe
             else{
                 info.innerHTML = "Something's wrong here..." ;
             }
         })
+
+        socket.on('notification', notedata =>{
+            let notification = document.getElementById("message");
+            if(notedata.type == "add"){
+                notifs[notedata.id] = notedata.message;
+            }
+            else if (notedata.type == "delete"){
+                notifs.splice(message.id, 1);
+            }
+            notification.innerHTML = notifs;
+        })
         
-    function aktualisiereUhrzeit() {
-        var jetzt = new Date();
-        var stunde = jetzt.getHours();
-        var minute = jetzt.getMinutes();
-        var sekunde = jetzt.getSeconds();
+        function aktualisiereUhrzeit() {
+            var jetzt = new Date();
+            var stunde = jetzt.getHours();
+            var minute = jetzt.getMinutes();
+            var sekunde = jetzt.getSeconds();
 
-        // Führende Nullen hinzufügen, wenn die Zahl kleiner als 10 ist
-        stunde = (stunde < 10 ? "0" : "") + stunde;
-        minute = (minute < 10 ? "0" : "") + minute;
-        
-        // Uhrzeit als String zusammensetzen
-        var uhrzeitString = stunde + ":" + minute;
+            // Führende Nullen hinzufügen, wenn die Zahl kleiner als 10 ist
+            stunde = (stunde < 10 ? "0" : "") + stunde;
+            minute = (minute < 10 ? "0" : "") + minute;
 
-        // Element mit der ID "uhrzeit" finden und den Text setzen
-        var time = document.getElementsByClassName("time")[0];
-        time.innerHTML = uhrzeitString;
-    }
+            // Uhrzeit als String zusammensetzen
+            var uhrzeitString = stunde + ":" + minute;
 
+            // Element mit der ID "uhrzeit" finden und den Text setzen
+            var time = document.getElementsByClassName("time")[0];
+            time.innerHTML = uhrzeitString;
+        }
+
+        //2-Dimensionales Array als Tabelle Ausgeben
+        //Parameter:
+        //message: string[][]       Tabelleninhalt ohne Überschriften
+        //ueberschrift: string[]    Überschriften. Bei keinen Überschriften: []
         function getTable(message, ueberschrift){
             let text = "<table>";
             if(ueberschrift.length) {
@@ -177,11 +127,30 @@
             return text;
         }
 
-      // Die Funktion einmal beim Laden der Seite ausführen
-    aktualisiereUhrzeit();
+        const message = document.getElementById("message");
+        const container = document.getElementById("message-container");
 
-      // Die Funktion alle 1000ms (1 Sekunde) wiederholen
-    setInterval(aktualisiereUhrzeit, 1000);
+        // Modifier la durée de l'animation en fonction de la largeur du message
+        const animationDuration = (message.offsetWidth + container.offsetWidth) * 10;
+
+        // Ajouter la durée de l'animation au style du message
+        message.style.animationDuration = animationDuration + "ms";
+
+        // Fonction pour démarrer ou redémarrer l'animation
+        function startAnimation() {
+            message.style.animation = "none";
+            message.offsetHeight;
+            message.style.animation = null;
+        }
+
+        // Démarrer l'animation
+        startAnimation();
+
+        // Die Funktion einmal beim Laden der Seite ausführen
+        aktualisiereUhrzeit();
+
+        // Die Funktion alle 1000ms (1 Sekunde) wiederholen
+        setInterval(aktualisiereUhrzeit, 1000);
     
     </script>
 </body>

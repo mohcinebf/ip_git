@@ -1,5 +1,5 @@
 // // Requiring module
-// const express = require('express');
+const express = require('express');
 
 // // Creating express object
 // const app = express();
@@ -20,6 +20,7 @@
 // // read object from html file
 
 var app = require('express')();
+app.use(express.static(__dirname));
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -39,4 +40,5 @@ io.on('connection',socket =>{
     socket.emit('lineinfo',{name:'Linie 13',dest:'Lünberg - Wolfsburg' })
     socket.emit('nextstop',{name:'Herrmannplatz',planned_time:'12:00' })
     socket.emit('information',{type:'table',header:'anschluesse',message:[['12:03', '13A', 'Kaiserplatz'], ['12:05', '24', 'Hansemannplatz']]})
+    socket.emit('notification',{id:0, type:'add', message:'Umleitung ueber Duesseldorf Ring/ Duesseldorferstrasse gesperrt / AAchenerstrasse gesperrt'})
 })
