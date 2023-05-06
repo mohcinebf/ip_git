@@ -1,4 +1,6 @@
 package main;
+import DataClasses.Information;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
