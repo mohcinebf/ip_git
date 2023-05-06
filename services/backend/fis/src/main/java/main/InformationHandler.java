@@ -88,7 +88,7 @@ public class InformationHandler extends Handler
     private void ini()
     {
         basicInfoFiller(this,TEMP_INT_UPCOMMING_FREQ,null,null,TEMP_INT_UPCOMMING_DURA,null,null);
-        dirtyTestingDataFilling(); // Für's erste so
+        // dirtyTestingDataFilling(); // Für's erste so
     }
 
     /**

@@ -3,229 +3,115 @@ package main;
 import DataClasses.Emergency;
 import DataClasses.Information;
 import DataClasses.Notification;
+import DataClasses.TextAdversiting;
+import core.Core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * Main class of the program.
+ * Starts up the handlers and the core.
+ * Also adds some static test data to the information handler.
+ * TODO: Starts the console input loop for dynamic events. (FIS-43)
+ *
+ * @author Fabian Ferrari
+ */
 public class Main
 {
+    private final static String lineName = "45";
+    private final static String lineDestination = "Uniklinikum";
+
     public static void main(String[] args)
     {
-        System.out.println("Hello World!");
+        System.out.println("Starting up...");
 
-        //easyInfoHandlerTesting();
-        //easyNotiHandlerTesting();
-        easyEmerHandlerTesting();
+        // Create handlers
+        EmergencyHandler emergencyHandler = new EmergencyHandler();
+        InformationHandler informationHandler = new InformationHandler();
+        NotificationHandler notificationHandler = new NotificationHandler();
+        DrivingStopHandler drivingStopHandler = new DrivingStopHandler();
 
-        System.out.println("Reached end of main");
-    }
+        // Create core
+        Core core = new Core(informationHandler, notificationHandler, emergencyHandler, drivingStopHandler, lineName, lineDestination);
 
-    /*
-        Von Robin:
-        Damit kann ich ohne weiteres Scheduler und InformationHandlers schnell testen ohne. Wer sonst probieren will;
-        -Setzte 'ALLOW_DEBUGING_TO_CONSOL' im InformationObserver auf true
-        -Starte das Programm
-        --Beende mit q
-        --Printe die Queuefüllstandsmenge mit i
-        --Gebe die ersten 3 Objekte der Queue aus (und entferne diese dabei auch)
-     */
-    static void easyInfoHandlerTesting()
-    {
-        System.out.println("Easy Info-Handler Test gestartet.");
-        InformationHandler ih = new InformationHandler();
-        ih.start();
-        String s = "";
+        // Start handlers
+        emergencyHandler.start();
+        informationHandler.start();
+        notificationHandler.start();
+        drivingStopHandler.start();
+
+        // Add some test data to the information handler
+        addTestData(informationHandler);
+
+        // Wait for user input. When user enters "exit", the program will shut down. Else, ask for a new input.
+        // TODO: Replace by extra class for dynamic events. (FIS-43)
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        while ( !s.equals("q") )
+        String input = "";
+        while(!input.equals("exit"))
         {
-            //System.out.println("s: '" + s + "'");
             try
             {
-                s = reader.readLine();
+                System.out.println("Enter \"exit\" to shut down the program.");
+                input = reader.readLine();
             }
-            catch (IOException e)
+            catch(IOException e)
             {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
-            if(s.equals("l"))
-            {
-                System.out.println("Queuesize: " + ih.getQueueSize());
-                Information info = ih.popInfo();
-                if (info != null)
-                    System.out.println(info.debugString());
-                info = ih.popInfo();
-                if (info != null)
-                    System.out.println(info.debugString());
-                info = ih.popInfo();
-                if (info != null)
-                    System.out.println(info.debugString());
-                System.out.println("Queuesize: " + ih.getQueueSize());
-            }
-            if(s.equals("i"))
-                System.out.println("Queuesize: " + ih.getQueueSize());
         }
-        ih.stopMyThreads();
-        System.out.println("Easy Info-Handler Test beendet.");
-    }
 
-    /**
-     * Methode um das Notificationsystem zu testen. Auf der Console gibt es vier Steuerzeichen; 'q','n','t','r'&'c'
-     * q Beendet das Programm
-     * n ermöglicht das Anlegen einer neuen ewigen Nachricht (simuliere Zentrale)
-     * t ermöglicht das Anlegen einer neuen zeitlich begrenzten Nachricht. Die erste Eingabe muss dabei die Zeit in Sekunden sein.
-     * r ermöglicht das Entfernen einer existierenden Nachricht (simuliere Zentrale)
-     * c popt den Head der Queue (simuliere Core)
-     * @author Robin
-     */
-    static void easyNotiHandlerTesting()
-    {
-        System.out.println("Easy Noti-Handler Test gestartet.");
-        NotificationHandler nh = new NotificationHandler();
-        nh.start();
+        // Stop handlers
+        emergencyHandler.stopMyThreads();
+        informationHandler.stopMyThreads();
+        notificationHandler.stopMyThreads();
+        drivingStopHandler.stopThread();
 
-
-
-        String s = "";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        while ( !s.equals("q") )
-        {
-            //System.out.println("s: '" + s + "'");
-            try
-            {
-                s = reader.readLine();
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-            if(s.equals("n"))
-            {
-                System.out.print("Neue Meldung: ");
-                try
-                {
-                    s = reader.readLine();
-                    System.out.print("\n");
-                    nh.addNoti(s);
-                }
-                catch (RuntimeException e)
-                {
-                    System.out.print("\n");
-                    System.out.println("Exception catched: " + e.getMessage());
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-            if(s.equals("t"))
-            {
-                System.out.print("Lebenszeit [in s]: ");
-                try
-                {
-                    s = reader.readLine();
-                    System.out.print("\n");
-                    double t = Double.parseDouble(s);
-                    System.out.print("Neue Meldung: ");
-                    s = reader.readLine();
-                    System.out.print("\n");
-                    nh.addNoti(s,t);
-                }
-                catch (RuntimeException e)
-                {
-                    System.out.print("\n");
-                    System.out.println("Exception catched: " + e.getMessage());
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-            if(s.equals("c"))
-            {
-                Notification head = nh.popNoti();
-                if(head == null)
-                    System.out.println("Es gibt keine Daten in der Queue");
-                else
-                    System.out.println(head.debugString());
-            }
-            if(s.equals("r"))
-            {
-                System.out.print("Lösche Meldung: ");
-                try
-                {
-                    s = reader.readLine();
-                    nh.removeNotiOBS(s);
-                    System.out.print("\n");
-                }
-                catch (RuntimeException e)
-                {
-                    System.out.print("\n");
-                    System.out.println("Exception catched: " + e.getMessage());
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-            System.out.println("IF-Block-Ende");
+        try {
+            emergencyHandler.join();
+            informationHandler.join();
+            notificationHandler.join();
+            drivingStopHandler.join();
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted while waiting for threads to stop.");
         }
-        nh.stopMyThreads();
-        System.out.println("Easy Info-Handler Test beendet.");
+
+        // Stop core
+        core.stop();
+
+
+        System.out.println("Shutting down...");
     }
 
     /**
-     * Einfache Testmethode für das Emergency-System.
-     * Füllt die PUBLIC_TEMP_WEBSOCKET_REPLACMENT_DUMMY-ArrayList direkt mit den Notfallmeldung.
-     * q Beendet den Test
-     * c Ersetzt den Coreaufruf und popt die Queue
-     * s Fügt dem System einen Notfall zu. Falls die Nachricht gleich einer Existeten ist, wird die Nachricht als Remove interpretiert.
-     * l Gibt zurück wie viele Elemente in der Queue sind.
+     * Adds some test data to the information handler.
+     * @param informationHandler The information handler to add the test data to.
      */
-    static void easyEmerHandlerTesting()
+    public static void addTestData(InformationHandler informationHandler)
     {
-        System.out.println("Easy Emer-Handler Test gestartet.");
-        EmergencyHandler eh = new EmergencyHandler();
-        eh.start();
-        String s = "";
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        while ( !s.equals("q") )
-        {
-            //System.out.println("s: '" + s + "'");
-            try
-            {
-                s = reader.readLine();
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-            if(s.equals("s"))
-            {
-                try
-                {
-                    System.out.print("MSG des Notfalls: ");
-                    s = reader.readLine();
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-                eh.PUBLIC_TEMP_WEBSOCKET_REPLACMENT_DUMMY.add(s);
-                System.out.print("\n");
-            }
-            if(s.equals("l"))
-                System.out.println("Queuesize: " + eh.getQueueSize());
-            if(s.equals("c"))
-            {
-                Emergency emer = eh.popEmer();
-                if(emer != null)
-                    System.out.println("Queuehead gefunden:\tHash: " + emer.hashValue + "\tActiv:" + emer.activ + '.');
-                else
-                    System.out.println("Die Queue ist leer.");
-            }
-        }
-        eh.stopMyThreads();
-        System.out.println("Easy Info-Handler Test beendet.");
+        Information info1 = new TextAdversiting("Lidl ist toll",5,1.3, 1.0,5);
+        info1.header = "Kauft bei Lidl!";
+        Information info2 = new TextAdversiting("Aldi ist toll",4,1.0, 1.0,10);
+        info2.header = "Kauft bei Aldi!";
+        Information info3 = new TextAdversiting("Rewe ist toll",1,0.9, 1.0,5);
+        info3.header = "Kauft bei Rewe!";
+        Information info5 = new TextAdversiting("Edeka ist toll",1,0.9, 0.0,10);
+        info5.header = "Kauft bei Edeka!";
+/*        Information info6 = new TextAdversiting("Penny ist toll",1,0.3, 1.0,7);
+        info6.header = "Kauft bei Penny!";
+        Information info7 = new TextAdversiting("Netto ist toll",1,0.2, 1.0,14);
+        info7.header = "Kauft bei Netto!";
+        Information info8 = new TextAdversiting("Kaufland ist toll",1,1.2, 1.0,19);
+        info8.header = "Kauft bei Kaufland!";
+        Information info9 = new TextAdversiting("Globus ist toll",1,0.066, 1.0,22);
+        info9.header = "Kauft bei Globus!";
+        Information info10 = new TextAdversiting("Kaisers ist toll",1,5.5, 0.0,11);
+        info10.header = "Kauft bei Kaisers!";*/
+
+        informationHandler.addInfoNewToScheduler(info1);
+        informationHandler.addInfoNewToScheduler(info2);
+        informationHandler.addInfoNewToScheduler(info3);
+        informationHandler.addInfoNewToScheduler(info5);
     }
 }

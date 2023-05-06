@@ -87,6 +87,11 @@ public class DrivingStopHandler extends Handler {
         //Sensor Daten hier empfangen(falls vorhanden) und Daten zur Bufferqueue hinzufügen
         // newData();
 
+        // Wenn keine Daten vorhanden sind, wird die Funktion beendet
+        if(this.queueBuffer.isEmpty()){
+            return;
+        }
+
         //Data aus Buffer lesen und in Queue für den Handler übergeben
         this.addQueue(removePosBuffer());
         System.out.println("Sensor hat Daten geschickt");
