@@ -12,7 +12,7 @@ import java.net.InetSocketAddress;
  */
 public class WebsocketServer extends WebSocketServer {
     
-    WebsocketServer(InetSocketAddress addr) {
+    public WebsocketServer(InetSocketAddress addr) {
         super(addr);
     }
 
@@ -66,7 +66,7 @@ public class WebsocketServer extends WebSocketServer {
     public record Notification(String id, Type type, String message) {
         static String topic = "notifications";
 
-        enum Type {
+        public enum Type {
             ADD,
             REMOVE,
         }

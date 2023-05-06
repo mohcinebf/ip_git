@@ -1,5 +1,7 @@
 package main;
 
+import DataClasses.Notification;
+
 import java.util.ArrayList;
 
 /**

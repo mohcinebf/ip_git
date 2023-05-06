@@ -1,6 +1,7 @@
 package main;
+import DataClasses.Information;
+
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
     Es gibt im InformationHandler genau ein Objekt dieser Klasse.

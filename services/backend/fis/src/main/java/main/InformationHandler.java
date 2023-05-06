@@ -2,6 +2,10 @@
 // then press Enter. You can now see whitespace characters in your code.
 package main;
 
+import DataClasses.Information;
+import DataClasses.TextAdversiting;
+import DataClasses.UpcommingHalts;
+
 /**
     Der InformationHandler (IH oder ih) ist die Zentralelogik für die Verwaltung der Informationen.
     Der IH nutzt den Scheduler, um die nächsten Informationstypen zu bestimmen, besitzt die Handler Klassenstruktur für die Queue Verbindung zum Core,

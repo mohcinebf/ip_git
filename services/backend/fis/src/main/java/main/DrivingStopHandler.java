@@ -1,4 +1,6 @@
 package main;
+import DataClasses.Position;
+
 import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -6,16 +8,16 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author David Bockstegers
  * Die Klasse kümmert sich darum die eintreffenden Daten über die Position zu empfangen und dem Core in einer Queue zur verfügung zu stellen
  */
-public class Positionhandler extends Handler {
+public class DrivingStopHandler extends Handler {
     private static final int MAX_QUEUE_SIZE = 10;
     private boolean keepRunning = true;
     //Buffer für die ankommenden Events der Sensorik(damit keins verloren geht falls diese nicht direkt in Queue gelegt werden)
     private LinkedList<Object> queueBuffer;
 
     /**
-     * Konstruktor der Klasse Positionhandler
+     * Konstruktor der Klasse DrivingStopHandler
      */
-    public Positionhandler(){
+    public DrivingStopHandler(){
         super(Position.class.getSimpleName(), MAX_QUEUE_SIZE);
         this.queueBuffer = new LinkedList<>();
     }
@@ -40,12 +42,8 @@ public class Positionhandler extends Handler {
      * Entnimmt der Queue die Position. Diese Funktion ermöglicht dem Core auf das nächste Event zuzugreifen.
      * @return Position
      */
-    public Position removeQueue(){
-        if(this.getQueueSize() <= 0){
-            throw new RuntimeException("Queue ist bereits leer");
-        }else {
-            return (Position) pop();
-        }
+    public Position popPosition(){
+        return (Position) this.pop();
     }
     /**
      * Fügt neue Position der Queue hinzu. Aus dieser Queue entnimmt der Core das Event.

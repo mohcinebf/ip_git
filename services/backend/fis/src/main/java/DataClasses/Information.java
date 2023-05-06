@@ -1,4 +1,4 @@
-package main;
+package DataClasses;
 /**
     Hauptklasse für alle Arten von Informationen. Informationen sind alles, was nach dem Anforderungsblatt mit geringster (3) Priorität angezeigt werden kann.
     Diese Oberklasse ist bewusst abstrakt, sodass man z.B. im Scheduler alle Information gleich behandeln kann.
@@ -12,9 +12,8 @@ package main;
     Eleganter und wahrscheinlich effizienter wäre letzteres, jedoch gibt es gerade bei den dynamischen Informationen (UpcommingHalts, Live-Stream, Dynmische Daten) die frage, wie man mit einer Funktion aus dieser Klasse an die entsprechenden Daten kommen sollt, die wahrscheinlich nur der Core kennt.
     @author Robin
  */
-public abstract class Information
+public abstract class Information extends InfoSection2
 {
-    public int id; // unique und const nach dem setzten
 
 
     // Folgende Attribute sind für den Scheduler
@@ -26,17 +25,8 @@ public abstract class Information
     public Double startingActiv = null;     // Wird nur durch Erbendeklasse gesetzt wenn nicht Single. Bei nicht Single irrelevant bzw. nicht definiert
     public int duration; // ANzeigezeit in Sekunden
 
-    private static int lastUsedID = 0; // Um die ID unique zu machen
-
-    /**
-        Funktion um eine eindeutige ID bei der Erstellung zuzuweisen.
-        @return ID für ein neues Objekt
-     */
-    protected static int giveNewId()
-    {
-        int i = lastUsedID;
-        lastUsedID++;
-        return  i;
+    public Information () {
+        super();
     }
 
     /**

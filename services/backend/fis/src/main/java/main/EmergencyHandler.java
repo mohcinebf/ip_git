@@ -1,5 +1,7 @@
 package main;
 
+import DataClasses.Emergency;
+
 import java.util.ArrayList;
 
 public class EmergencyHandler extends Handler

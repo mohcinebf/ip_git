@@ -1,9 +1,8 @@
 package main;
+import DataClasses.Information;
+
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import  java.util.Random;
-import java.math.*;
 
 /**
     Ein dynamischer Scheduler sucht für einen bestimmten Typ (z.B. Werbung) einen Bestimmte Subinformation. Der DS wird für jede Information erstellt, die isSingle == false ist.

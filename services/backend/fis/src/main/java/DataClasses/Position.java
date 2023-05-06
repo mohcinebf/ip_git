@@ -1,4 +1,4 @@
-package main;
+package DataClasses;
 /**
  * @author David Bockstegers
  * Die Klasse Position gibt an ob sich der Bus gerade einer Haltestelle nähert oder diese verlässt und wie die Haltestelle heißt.
@@ -24,7 +24,7 @@ public class Position {
     public boolean getHaltnaehern(){ return this.Haltnaehern; }
 
     /**
-     * Gibt Auskunft darüber wie die aktuelle Haltestelle heißt.
+     * Gibt Auskunft darüber wie die aktuelle (haltestelle = true) / nächste (haltestelle = false) Haltestelle heißt.
      * @return Name der Haltestelle
      */
     public String getHaltestelle() { return this.haltestelle;}
