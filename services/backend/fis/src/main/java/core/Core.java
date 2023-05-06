@@ -34,7 +34,7 @@ import static java.lang.Thread.sleep;
 public class Core {
     private final int THREAD_SLEEPING_TIME_IN_SECONDS = 2;  // Es sollte reichen, wenn der Core alle 2 Sekunden überprüft, ob neue Informationen in den Queues sind.
     private final String WEBSOCKET_SERVER_ADDRESS = "localhost"; // Adresse des Websocket-Servers
-    private final int WEBSOCKET_SERVER_PORT = 8080; // Port des Websocket-Servers
+    private final int WEBSOCKET_SERVER_PORT = 8887; // Port des Websocket-Servers
 
     private final InformationHandler informationHandler;
     private final DrivingStopHandler drivingStopHandler;
@@ -48,6 +48,7 @@ public class Core {
     private InfoSection2 lastInformation = null;    // Die letzte Information, die angezeigt wurde.
     private boolean isRunning = true;   // Gibt an, ob die main loop noch laufen soll.
     private final Thread mainLoopThread;
+    private final Thread websocketServerThread;
 
     /**
      * Konstruktor der Klasse Core.
@@ -66,7 +67,20 @@ public class Core {
         this.emergencyHandler = emergencyHandler;
         this.drivingStopHandler = drivingStopHandler;
 
+        // Create websocket server and start it in new thread.
         this.websocketServer = new WebsocketServer(new InetSocketAddress(WEBSOCKET_SERVER_ADDRESS, WEBSOCKET_SERVER_PORT));
+        websocketServerThread = new Thread(websocketServer);
+        websocketServerThread.start();
+        // Wait for connection to websocket server.
+        while (!websocketServer.hasConnection()) {
+            System.out.println("Waiting for connection to websocket server...");
+            try {
+                sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        // Send line info to websocket server.
         this.websocketServer.sendLineInfo(lineName, destination);
 
         // Startet die main loop in einem eigenen Thread.
@@ -97,12 +111,15 @@ public class Core {
             Emergency emergency = emergencyHandler.popEmer();
             if (emergency != null) {
                 if (emergency.activ) {
+                    // "Starte" den Notfall, d.h. leite ihn an den Websocket-Server weiter.
                     websocketServer.sendInformationText(emergency.header, emergency.msg);
                     emergencyActive = true;
                 } else {
+                    // "Beende" den Notfall, d.h. sende wieder normale Informationen an den Websocket-Server.
                     emergencyActive = false;
                     if (lastInformation != null) {
-                        websocketServer.sendInformationText(lastInformation.header, lastInformation.msg);
+                        if (lastInformation instanceof UpcommingHalts) websocketServer.sendInformationTable("Nächste Haltestellen", this.getConnections());
+                        else websocketServer.sendInformationText(lastInformation.header, lastInformation.msg);
                         startTimeInSeconds = (int) (System.currentTimeMillis() / 1000);
                     }
                 }
@@ -119,7 +136,7 @@ public class Core {
                     }
                     else {
                         // Wenn sich das Fahrzeug einem Halt nähert, werden dem Frontend die Anschlüsse an der kommenden Haltestelle mitgeteilt.
-                        websocketServer.sendInformationTable("Anschlüsse", this.getUpcomingHalts());
+                        websocketServer.sendInformationTable("Anschlüsse", this.getConnections());
                         drivingStopActive = true;
                     }
                 }
@@ -129,13 +146,14 @@ public class Core {
                     drivingStopActive = false;
                     missedDrivingStop = null; // Falls ein Fahrstopp verpasst wurde, wird dieser hier wieder zurückgesetzt, da er nicht mehr relevant ist (da das Fahrzeug sich von der Haltestelle entfernt hat).
                     if (lastInformation != null) {
-                        websocketServer.sendInformationText(lastInformation.header, lastInformation.msg);
+                        if (lastInformation instanceof UpcommingHalts) websocketServer.sendInformationTable("Nächste Haltestellen", this.getConnections());
+                        else websocketServer.sendInformationText(lastInformation.header, lastInformation.msg);
                         startTimeInSeconds = (int) (System.currentTimeMillis() / 1000);
                     }
                 }
             } else if (missedDrivingStop != null && !emergencyActive) {
                 // Wenn ein Fahrstopp verpasst wurde und kein Notfall aktiv ist, werden die Anschlüsse an der kommenden Haltestelle angezeigt.
-                websocketServer.sendInformationTable("Anschlüsse", this.getUpcomingHalts());
+                websocketServer.sendInformationTable("Anschlüsse", this.getConnections());
                 drivingStopActive = true;
                 missedDrivingStop = null;
             }
@@ -164,7 +182,8 @@ public class Core {
             if (lastInformation == null || (System.currentTimeMillis() / 1000) - startTimeInSeconds >= ((Information)lastInformation).duration) {
                 Information information = informationHandler.popInfo();
                 if (information != null) {
-                    websocketServer.sendInformationText(information.header, information.msg);
+                    if (information instanceof UpcommingHalts) websocketServer.sendInformationTable("Nächste Haltestellen", this.getConnections());
+                    else websocketServer.sendInformationText(information.header, information.msg);
                     lastInformation = information;
                     startTimeInSeconds = (int) (System.currentTimeMillis() / 1000);
                 }
@@ -180,19 +199,37 @@ public class Core {
     }
 
     /**
-     * Gibt die nächsten Haltestellen der Linie zurück.
+     * Gibt die Anschlüsse der Linie zurück, die an der nächsten Haltestelle abfahren.
      * TODO: Anschlüsse an der kommenden Haltestelle ermitteln. Für den ersten Prototypen werden die Anschlüsse hart kodiert.
      * @return Die nächsten Haltestellen der Linie als WebsocketServer.Table (also inklusive der Tabellenüberschriften).
+     */
+    public WebsocketServer.Table getConnections() {
+        // Aktuelle Zeit
+        LocalTime now = LocalTime.now();
+        String[] tableHeaders = {"Abfahrt", "Linie", "Ziel", "HS"};
+        String[][] tableData = {
+                {now.plusMinutes(5).format(DateTimeFormatter.ofPattern("HH:mm")), "13", "Aachen Hauptbahnhof", "1"},
+                {now.plusMinutes(10).format(DateTimeFormatter.ofPattern("HH:mm")), "35", "Breinig Entengasse", "15"},
+                {now.plusMinutes(15).format(DateTimeFormatter.ofPattern("HH:mm")), "34", "Ronheider Weg", "3"},
+                {now.plusMinutes(20).format(DateTimeFormatter.ofPattern("HH:mm")), "14", "Ronheider Weg", "3"},
+        };
+        return new WebsocketServer.Table(tableHeaders, tableData);
+    }
+
+    /**
+     * Gibt die kommenden Haltestellen zurück, an denen das Fahrzeug hält.
+     * TODO: Die kommenden Haltestellen ermitteln. Für den ersten Prototypen werden die Haltestellen hart kodiert.
+     * @return Die kommenden Haltestellen als WebsocketServer.Table (also inklusive der Tabellenüberschriften).
      */
     public WebsocketServer.Table getUpcomingHalts() {
         // Aktuelle Zeit
         LocalTime now = LocalTime.now();
-        String[] tableHeaders = {"Abfahrt", "Linie", "Ziel", "Gleis"};
+        String[] tableHeaders = {"Zeit", "Halt"};
         String[][] tableData = {
-                {now.plusMinutes(5).format(DateTimeFormatter.ofPattern("HH:mm")), "RE1", "Aachen", "1"},
-                {now.plusMinutes(10).format(DateTimeFormatter.ofPattern("HH:mm")), "RE2", "Köln", "2"},
-                {now.plusMinutes(15).format(DateTimeFormatter.ofPattern("HH:mm")), "RE3", "Düsseldorf", "3"},
-                {now.plusMinutes(20).format(DateTimeFormatter.ofPattern("HH:mm")), "RE4", "Dortmund", "4"},
+                {now.plusMinutes(2).format(DateTimeFormatter.ofPattern("HH:mm")), "Aachen Bushof"},
+                {now.plusMinutes(4).format(DateTimeFormatter.ofPattern("HH:mm")), "Elisenbrunnen"},
+                {now.plusMinutes(6).format(DateTimeFormatter.ofPattern("HH:mm")), "Alter Posthof"},
+                {now.plusMinutes(8).format(DateTimeFormatter.ofPattern("HH:mm")), "Bahnhof Schanz"},
         };
         return new WebsocketServer.Table(tableHeaders, tableData);
     }
@@ -203,7 +240,9 @@ public class Core {
     public void stop() {
         isRunning = false;
         try {
+            websocketServer.stop();
             mainLoopThread.join();
+            websocketServerThread.join();
         } catch (InterruptedException e) {
             System.out.println("Core: Error while stopping main loop thread.");
         }

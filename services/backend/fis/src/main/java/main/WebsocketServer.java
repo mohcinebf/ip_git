@@ -18,10 +18,16 @@ public class WebsocketServer extends WebSocketServer {
 
     private static final Gson gson = new Gson();
     private WebSocket socket;
+    private boolean hasConnection = false;
+
+    public boolean hasConnection() {
+        return this.hasConnection;
+    }
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         this.socket = webSocket;
+        this.hasConnection = true;
     }
 
     /**
@@ -114,6 +120,7 @@ public class WebsocketServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket webSocket, int code, String reason, boolean remote) {
+        this.hasConnection = false;
         System.out.println("frontend disconnected: " + reason);
     }
 

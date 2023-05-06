@@ -14,7 +14,8 @@ public class TextAdversiting extends Adversiting
         super();
         this.type = "Werbung";
         this.adType = "Text";
-        this.text = text;
+        this.text = text; // should be replaced by msg attribute from superclass
+        this.msg = text;
         this.isSingle = false;
         this.frequency = freq;
         this.startingBaseValue = startingBaseValue;
