@@ -1,14 +1,8 @@
 package main;
 
-import DataClasses.Emergency;
 import DataClasses.Information;
-import DataClasses.Notification;
 import DataClasses.TextAdversiting;
 import core.Core;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Main class of the program.
@@ -18,7 +12,7 @@ import java.io.InputStreamReader;
  *
  * @author Fabian Ferrari
  */
-public class Main
+public class FIS
 {
     private final static String lineName = "45";
     private final static String lineDestination = "Uniklinikum";
@@ -46,21 +40,7 @@ public class Main
         addTestData(informationHandler);
 
         // Wait for user input. When user enters "exit", the program will shut down. Else, ask for a new input.
-        // TODO: Replace by extra class for dynamic events. (FIS-43)
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String input = "";
-        while(!input.equals("exit"))
-        {
-            try
-            {
-                System.out.println("Enter \"exit\" to shut down the program.");
-                input = reader.readLine();
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
+        DynamicEventsInput.run(notificationHandler, emergencyHandler, drivingStopHandler);
 
         // Stop handlers
         emergencyHandler.stopMyThreads();

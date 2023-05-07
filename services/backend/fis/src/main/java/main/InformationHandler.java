@@ -12,7 +12,7 @@ import DataClasses.UpcommingHalts;
     und startet außerdem den InformationOberserver; dies ist der Thread, welcher die Ein-/Ausgänge des Handlers überwacht und entsprechend aud Veränderungen reagiert.
 
     Da der Thread leider nicht als Methode des InformationHandlers in java erstellt werden kann, müssen mehr Methoden public sein, als von mir gewollt.
-    Die folgenden Methoden sind für die Benutzung durch den Core oder die Main freigegeben
+    Die folgenden Methoden sind für die Benutzung durch den Core oder die main freigegeben
     -Alle ererbten öffentlichen Funktion der Handler-Klasse
     -stopMyObserver - Methode um den Observer sauber zu beenden - Aufzurufen, wenn das Programm enden soll.
     -popInfo - macht das Gleiche wie Handler.pop nur ist die Rpckgabe schon gecastet.
