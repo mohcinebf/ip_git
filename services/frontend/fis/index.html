@@ -25,9 +25,10 @@
     </div>
     <div class="notifications">
         <div id="message-container">
-           <span id="message"></span>
+            <span id="message"></span>
         </div>
     </div>
+
 
     <script>
         const socket = window.io();
@@ -73,7 +74,8 @@
             else if (notedata.type == "delete"){
                 notifs.splice(message.id, 1);
             }
-            notification.innerHTML = displayNotifications();
+            notification.innerHTML = formatNotifications();
+            runNotifications();
         })
         
         function aktualisiereUhrzeit() {
@@ -124,7 +126,7 @@
         //Parameter: -
         //Return:
         //disp: string  Nachrichten aus globaler Variable 'notifs' mit Unterteilung ' - '
-        function displayNotifications(){
+        function formatNotifications(){
             let disp = '';
             for (let n in notifs){
                 if (n == 0){
@@ -137,29 +139,50 @@
             return disp;
         }
 
-        //Soll nur dargestellt werden, wenn Nachrichten zur verfuegung stehen
-        if(notifs.length > 0){
-            let notifications = document.getElementById("notifications");
-
+        var id = null;
+        //Animation der Nachrichtenleiste; Nimmt die Länge des Textes innerhalb von 'message' und laesst diese
+        //  von Anfang bis ende laufen
+        //Parameter: -
+        //Return: -
+        function runNotifications(){
             const message = document.getElementById("message");
             const container = document.getElementById("message-container");
 
-            // Modifier la durée de l'animation en fonction de la largeur du message
-            const animationDuration = (message.innerText.length + container.offsetWidth) * 10;
-
-            // Ajouter la durée de l'animation au style du message
-            message.style.animationDuration = animationDuration + "ms";
-
-            // Fonction pour démarrer ou redémarrer l'animation
-            function startAnimation() {
-                message.style.animation = "none";
-                message.offsetHeight;
-                message.style.animation = null;
+            let position = - message.offsetWidth;   //Startposition ist rechte Border - Laenge der Nachrichten
+            clearInterval(id);
+            id = setInterval(frame, 10);            //neuer farme alle 10ms
+            function frame(){
+                if(position >= container.offsetWidth){
+                    clearInterval(id);
+                    runNotifications();
+                }
+                else {
+                    position += 3;                  //3px nach links verschieben
+                    message.style.right = position + "px";
+                }
             }
-
-            // Démarrer l'animation
-            startAnimation();
         }
+
+        //let notifications = document.getElementById("notifications");
+
+        //const message = document.getElementById("message");
+        //const container = document.getElementById("message-container");
+
+        // Modifier la durée de l'animation en fonction de la largeur du message
+        //const animationDuration = ((message.innerText.length * 20) + container.offsetWidth) / (container.offsetWidth/12);
+
+        // Ajouter la durée de l'animation au style du message
+        //message.style.animationDuration = animationDuration + "s";
+
+        // Fonction pour démarrer ou redémarrer l'animation
+        //function startAnimation() {
+        //    message.style.animation = "none";
+        //    message.offsetHeight;
+        //    message.style.animation = null;
+        //}
+
+        // Démarrer l'animation
+        //startAnimation();
 
         // Die Funktion einmal beim Laden der Seite ausführen
         aktualisiereUhrzeit();

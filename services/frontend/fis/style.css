@@ -1,3 +1,4 @@
+
 .header{
     display: flex;
     flex-direction: row;
@@ -22,11 +23,11 @@
     flex: 0.9;
 }
 #message-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    display: flex;
+    align-items: center;
+    position: relative;
+    bottom: 0px;
     overflow: hidden;
-    width: 1500px;
     height: 30px;
     border: 10px solid #ccc;
 }
@@ -37,9 +38,17 @@
     font-size: 20px;
     color: #333;
     right: 0;
-    animation: marquee 20s linear infinite;
-    animation-iteration-count: infinite;
+}
 
+.notifications {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+}
+/*    animation: marquee 20s linear;
+    animation-iteration-count: infinite;
+    animation
 }
 
 @keyframes marquee {
@@ -49,4 +58,4 @@
     to {
         left: -100%;
     }
-}
+}*/
