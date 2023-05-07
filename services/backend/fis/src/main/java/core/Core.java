@@ -46,6 +46,7 @@ public class Core {
     private boolean drivingStopActive = false;  // Gibt an, ob ein Fahrstopp aktiv ist, d.h. ob sich das Fahrzeug gerade einer Haltestelle nähert.
     private Position missedDrivingStop = null;  // Speichert das Event, wenn ein Fahrstopp verpasst wurde, d.h. wenn sich das Fahrzeug einer Haltestelle nähert, während ein Notfall aktiv ist.
     private InfoSection2 lastInformation = null;    // Die letzte Information, die angezeigt wurde.
+    private Position lastPosition = null;   // Die letzte Position, die angezeigt wurde.
     private boolean isRunning = true;   // Gibt an, ob die main loop noch laufen soll.
     private final Thread mainLoopThread;
     private final Thread websocketServerThread;
@@ -117,7 +118,10 @@ public class Core {
                 } else {
                     // "Beende" den Notfall, d.h. sende wieder normale Informationen an den Websocket-Server.
                     emergencyActive = false;
-                    if (lastInformation != null) {
+                    if (lastPosition != null) {
+                        websocketServer.sendInformationTable("Anschlüsse", this.getConnections());
+                    }
+                    else if (lastInformation != null) {
                         if (lastInformation instanceof UpcommingHalts) websocketServer.sendInformationTable("Nächste Haltestellen", this.getConnections());
                         else websocketServer.sendInformationText(lastInformation.header, lastInformation.msg);
                         startTimeInSeconds = (int) (System.currentTimeMillis() / 1000);
@@ -131,19 +135,21 @@ public class Core {
                 if (drivingStop.getHaltnaehern()) {
                     if (emergencyActive) {
                         // Wenn sich das Fahrzeug einem Halt nähert und ein Notfall aktiv ist, werden die Anschlüsse nicht angezeigt.
-                        // Es wird sich gemerkt, dass ein Fahrstopp verpasst wurde, damit die Anschlüsse nach dem Notfall wieder angezeigt werden können.
+                        // Es wird sich gemerkt, welcher Fahrstopp verpasst wurde, damit die Anschlüsse nach dem Notfall wieder angezeigt werden können.
                         missedDrivingStop = drivingStop;
                     }
                     else {
                         // Wenn sich das Fahrzeug einem Halt nähert, werden dem Frontend die Anschlüsse an der kommenden Haltestelle mitgeteilt.
                         websocketServer.sendInformationTable("Anschlüsse", this.getConnections());
                         drivingStopActive = true;
+                        lastPosition = drivingStop;
                     }
                 }
                 else {
                     // Wenn sich das Fahrzeug von einem Halt entfernt, wird dem Frontend die neue nächste Haltestelle mitgeteilt und die zuletzt angezeigte Information wird wieder angezeigt.
                     websocketServer.sendNextStop(drivingStop.getHaltestelle(), LocalTime.now().plusMinutes(5).format(DateTimeFormatter.ofPattern("HH:mm")));
                     drivingStopActive = false;
+                    lastPosition = null;    // Dieses Event ist nicht relevant für die Wiederherstellung der Anzeige nach einem Notfall.
                     missedDrivingStop = null; // Falls ein Fahrstopp verpasst wurde, wird dieser hier wieder zurückgesetzt, da er nicht mehr relevant ist (da das Fahrzeug sich von der Haltestelle entfernt hat).
                     if (lastInformation != null) {
                         if (lastInformation instanceof UpcommingHalts) websocketServer.sendInformationTable("Nächste Haltestellen", this.getConnections());

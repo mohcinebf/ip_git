@@ -94,7 +94,7 @@ public class DrivingStopHandler extends Handler {
 
         //Data aus Buffer lesen und in Queue für den Handler übergeben
         this.addQueue(removePosBuffer());
-        System.out.println("Sensor hat Daten geschickt");
+        //System.out.println("Sensor hat Daten geschickt");
 
         //entleeren übernimmt eigt Core
         /*Position tmp = this.removeQueue();
