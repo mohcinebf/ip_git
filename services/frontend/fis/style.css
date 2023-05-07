@@ -38,6 +38,7 @@
     color: #333;
     right: 0;
     animation: marquee 20s linear infinite;
+    animation-iteration-count: infinite;
 
 }
 

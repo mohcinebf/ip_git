@@ -23,8 +23,10 @@
             <div class="information"></div>
         </div>
     </div>
-    <div id="message-container">
-        <span id="message"></span>
+    <div class="notifications">
+        <div id="message-container">
+           <span id="message"></span>
+        </div>
     </div>
 
     <script>
@@ -60,18 +62,7 @@
         //message: string[][]       Die Darzustellenden Informationen
         socket.on('information',infodata =>{
             let info = document.getElementsByClassName('information')[0];
-            //Darstellung der folgenden Haltestellen
-            if (infodata.header === 'haltestellen'){
-                info.innerHTML = getTable(infodata.message, []);
-            }
-            //Darstellung der Anschluesse
-            else if (infodata.header === 'anschluesse'){
-                info.innerHTML = getTable(infodata.message, ['Abfahrt', 'Bus', 'Richtung']);
-            }
-            //Fehler bei der Uebergabe
-            else{
-                info.innerHTML = "Something's wrong here..." ;
-            }
+            info.innerHTML = getTable(infodata.header ,infodata.message.items, infodata.message.headers);
         })
 
         socket.on('notification', notedata =>{
@@ -82,7 +73,7 @@
             else if (notedata.type == "delete"){
                 notifs.splice(message.id, 1);
             }
-            notification.innerHTML = notifs;
+            notification.innerHTML = displayNotifications();
         })
         
         function aktualisiereUhrzeit() {
@@ -107,8 +98,10 @@
         //Parameter:
         //message: string[][]       Tabelleninhalt ohne Überschriften
         //ueberschrift: string[]    Überschriften. Bei keinen Überschriften: []
-        function getTable(message, ueberschrift){
-            let text = "<table>";
+        //Return:
+        //text: string  Tabellendarstellung in HTML; Ueberschriftenzeile nur bei Uebergabe
+        function getTable(type, message, ueberschrift){
+            let text = "<table id=" + type + ">";
             if(ueberschrift.length) {
                 text += "<tr>";
                 for (let u in ueberschrift) {
@@ -127,24 +120,46 @@
             return text;
         }
 
-        const message = document.getElementById("message");
-        const container = document.getElementById("message-container");
-
-        // Modifier la durée de l'animation en fonction de la largeur du message
-        const animationDuration = (message.offsetWidth + container.offsetWidth) * 10;
-
-        // Ajouter la durée de l'animation au style du message
-        message.style.animationDuration = animationDuration + "ms";
-
-        // Fonction pour démarrer ou redémarrer l'animation
-        function startAnimation() {
-            message.style.animation = "none";
-            message.offsetHeight;
-            message.style.animation = null;
+        //Array an Nachrichten als leserlich aneinander-reihen
+        //Parameter: -
+        //Return:
+        //disp: string  Nachrichten aus globaler Variable 'notifs' mit Unterteilung ' - '
+        function displayNotifications(){
+            let disp = '';
+            for (let n in notifs){
+                if (n == 0){
+                    disp += notifs[n];
+                }
+                else{
+                    disp += ' - ' + notifs[n];
+                }
+            }
+            return disp;
         }
 
-        // Démarrer l'animation
-        startAnimation();
+        //Soll nur dargestellt werden, wenn Nachrichten zur verfuegung stehen
+        if(notifs.length > 0){
+            let notifications = document.getElementById("notifications");
+
+            const message = document.getElementById("message");
+            const container = document.getElementById("message-container");
+
+            // Modifier la durée de l'animation en fonction de la largeur du message
+            const animationDuration = (message.innerText.length + container.offsetWidth) * 10;
+
+            // Ajouter la durée de l'animation au style du message
+            message.style.animationDuration = animationDuration + "ms";
+
+            // Fonction pour démarrer ou redémarrer l'animation
+            function startAnimation() {
+                message.style.animation = "none";
+                message.offsetHeight;
+                message.style.animation = null;
+            }
+
+            // Démarrer l'animation
+            startAnimation();
+        }
 
         // Die Funktion einmal beim Laden der Seite ausführen
         aktualisiereUhrzeit();
