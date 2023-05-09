@@ -1,3 +1,4 @@
+
 .header{
     display: flex;
     flex-direction: row;
@@ -9,15 +10,16 @@
 .direction{
     flex: 0.967;
 }
+
 .container{
     background-color: lightgreen;
 }
+
 .content{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-
     padding: 10px;
     font-size: 30px;
 }
@@ -25,13 +27,14 @@
     flex: 0.9;
 }
 #message-container {
-    position: fixed;
+    display: flex;
+    align-items: center;
+    position: relative;
     bottom: 0;
     left: 0;
     overflow: hidden;
-    width: 1550px;
     height: 30px;
-    border: 10px solid #ccc;
+    /*border: 10px solid #ccc;*/
     background-color: yellow;
     font-weight: bold;
     border: 2px dashed black;
@@ -43,29 +46,24 @@
     font-size: 20px;
     color: #333;
     right: 0;
-    animation: marquee 20s linear infinite;
-    animation-iteration-count: infinite;
-
 }
 
-@keyframes marquee {
-    from {
-        left: 100%;
-    }
-    to {
-        left: -100%;
-    }
+.notifications {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
 }
 
-    tr{
-        padding: 0;
-    }
- td:nth-child(2){
+tr{
+    padding: 0;
+}
+td:nth-child(2){
     border: none;
     border-left: 3px solid green;
     padding: 8px;
     position: relative;
- }
+}
 
 td:nth-child(2)::after{
     content: '';
