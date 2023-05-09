@@ -48,7 +48,7 @@
 
 .information #haltstellen{
     padding: 14px 10px 10px 10px;
-    font-size: 70px;
+    font-size: 60px;
 }
 
 #haltstellen{
@@ -83,37 +83,42 @@
     text-align: left;
 }
 
+#haltstellen td {
+    padding-left: 50px;
+}
+
 #haltstellen td:nth-child(2){
     border: none;
-    border-left: 3px solid green;
+    border-left: 8px solid rgb(45,202, 63);
     padding: 8px;
     position: relative;
+    padding-left: 50px;
 }
 
 #haltstellen  td:nth-child(2)::after{
     content: '';
     display: block;
-    height: 8px;
-    width: 8px;
+    height: 16px;
+    width: 16px;
     position: absolute;
     border-radius: 50%;
-    border: 1px solid green;
-    left: -6.5px;
-    top: 45%;
-    background-color: #90ee90;
+    border: 8px solid rgb(45,202, 63);
+    left: -21px;
+    top: 35%;
+    background-color: white;
 }
 
-#haltstellen td:nth-child(2)::before{
+/*#haltstellen td:nth-child(2)::before{
     content: '';
     display: block;
     height: 2px;
     width: 2.5px;
     position: absolute;
-    background-color: green;
+    background-color: rgb(45,202, 63);
     position: absolute;
     top: -2px;
     left: -2.5px;
-}
+}*/
 
 .notifications {
     display: flex;
@@ -140,6 +145,5 @@
     position: absolute;
     white-space: nowrap;
     font-size: 40px;
-    color: #333;
     right: 0;
 }
