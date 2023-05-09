@@ -30,7 +30,7 @@ http.listen(80, function(){
 });
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
-    
+
 });
 
 io.on('connection',socket =>{
@@ -39,8 +39,7 @@ io.on('connection',socket =>{
     })
     socket.emit('lineinfo',{name:'Linie 13',dest:'Lünberg - Wolfsburg' })
     socket.emit('nextstop',{name:'Herrmannplatz',planned_time:'12:00' })
-    //socket.emit('information',{type:'table',header:'anschluesse',message: {headers:['Zeit', 'Bus', 'Richtung'], items:[['12:03', '13A', 'Kaiserplatz'], ['12:05', '24', 'Hansemannplatz']]}})
-    socket.emit('information',{type:'table',header:'haltestellen',message: {headers:[], items:[['12:03', 'Kaiserplatz'], ['12:05', 'Hansemannplatz'], ['12:05', 'Hansemannplatz'], ['12:05', 'Hansemannplatz'], ['12:05', 'Hansemannplatz']]}})
+    //socket.emit('information',{type:'table',header:'haltstellen',message:{ headers:"",items:[['13:00','Aachen hbf'],['13:15','Normaluhr'],['13:30','Kaiserplatz'],['13:45','Hansemannplatz'],['14:00','Bushof']]}})
+    socket.emit('information',{type:'table',header:'anschluesse',message: {headers:['Zeit', 'Bus', 'Richtung'], items:[['13:05', '24', 'Hansemannplatz'],['13:10', '13', 'Kaiserplatz'],['13:15', '7','Normaluhr'],['13:30', '25','Kaiserplatz'],['13:45', '12','Hansemannplatz'],['14:00', '35','Bushof']]}})
     socket.emit('notification',{id:0, type:'add', message:'Umleitung ueber Duesseldorf Ring/ Duesseldorferstrasse gesperrt / AAchenerstrasse gesperrt'})
-    socket.emit('notification',{id:1, type:'add', message:'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet'})
 })

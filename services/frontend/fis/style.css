@@ -1,7 +1,7 @@
 .header{
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     background-color: #4caf50;
     padding: 10px;
@@ -9,15 +9,14 @@
 .direction{
     flex: 0.967;
 }
-.container{
-    background-color: lightgreen;
-}
 .content{
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
-
+    background-color: white;
+    border: solid;
+    border-color: #4caf50;
     padding: 10px;
     font-size: 30px;
 }
@@ -25,13 +24,14 @@
     flex: 0.9;
 }
 #message-container {
-    position: fixed;
+    display: flex;
+    align-items: center;
+    position: relative;
     bottom: 0;
     left: 0;
     overflow: hidden;
-    width: 1550px;
     height: 30px;
-    border: 10px solid #ccc;
+    /*border: 10px solid #ccc;*/
     background-color: yellow;
     font-weight: bold;
     border: 2px dashed black;
@@ -43,31 +43,61 @@
     font-size: 20px;
     color: #333;
     right: 0;
-    animation: marquee 20s linear infinite;
-    animation-iteration-count: infinite;
+
+}
+.notifications {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+.information #haltstellen{
+    padding: 14px 10px 10px 10px;
+    font-size: 30px;
+}
+
+#haltstellen{
+    width: -webkit-fill-available;
 
 }
 
-@keyframes marquee {
-    from {
-        left: 100%;
-    }
-    to {
-        left: -100%;
-    }
+#haltstellen tr{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background-color: white;
+
+
+}
+#haltstellen tbody td:last-child{
+    flex:0.9;
 }
 
-    tr{
-        padding: 0;
-    }
- td:nth-child(2){
+#anschluesse{
+    padding: 10px;
+    font-size: 30px;
+    margin-left: auto;
+    margin-right: auto;
+}
+#anschluesse td {
+    padding: 10px;
+    text-align: left;
+}
+#anschluesse th {
+    padding: 10px;
+    text-align: left;
+}
+
+#haltstellen td:nth-child(2){
     border: none;
     border-left: 3px solid green;
     padding: 8px;
     position: relative;
- }
+}
 
-td:nth-child(2)::after{
+#haltstellen  td:nth-child(2)::after{
     content: '';
     display: block;
     height: 8px;
@@ -80,7 +110,7 @@ td:nth-child(2)::after{
     background-color: #90ee90;
 }
 
-td:nth-child(2)::before{
+#haltstellen td:nth-child(2)::before{
     content: '';
     display: block;
     height: 2px;
@@ -90,4 +120,14 @@ td:nth-child(2)::before{
     position: absolute;
     top: -2px;
     left: -2.5px;
+}
+
+
+@keyframes marquee {
+    from {
+        left: 100%;
+    }
+    to {
+        left: -100%;
+    }
 }

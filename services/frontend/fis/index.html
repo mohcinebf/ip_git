@@ -6,198 +6,190 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <script type="text/html" src="/app.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    
-    <div class="container">
-        <div class="header">
-            <div class="line"></div>
-            <div class="direction"></div>
-            <div class="time"></div>
-        </div>
-        <div >
-            <div class="content">
+<script type="text/html" src="/app.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 
-                <div class="arrivaltime"></div>
-                <div class="nextstop"></div>
-
-
-            </div>
-            <div class="information"></div>
-
-        </div>
+<div class="container">
+    <div class="header">
+        <div class="line"></div>
+        <div class="direction"></div>
+        <div class="time"></div>
     </div>
-    <div class="notifications">
-        <div id="message-container">
-           <span id="message"></span>
+    <div>
+        <div class="content">
+            <div class="arrivaltime"></div>
+            <div class="nextstop"></div>
         </div>
+        <div class="information"></div>
     </div>
-    <div class="timeline">
-        <div class="timeline-object complete">
-            <div class="timeline-status"></div>
-            <div class="timeline-content">
-
-            </div>
-        </div>
+</div>
+<div class="notifications">
+    <div id="message-container">
+        <span id="message"></span>
     </div>
-    <script>
-
-        const socket = window.io();
-        var notifs = [];
-
-        //Verarbeitung der Informationen für Bereich 1 mit Informationen ueber den aktuellen Bus.
-        //Stellt 'lineinfo' dar, mit:
-        //name: string          Name/Nummer des Busses
-        //direction: string     Richtung, in die der Bus faehrt
-        socket.on('lineinfo',lineinfodata =>{
-            let line = document.getElementsByClassName('line')[0];
-            line.innerHTML = lineinfodata.name;
-            let direction = document.getElementsByClassName('direction')[0];
-            direction.innerHTML = lineinfodata.dest;
-        })
-
-        //Verarbeitung der Informationen für Bereich 2 mit Informationen ueber die naechste Haltestelle.
-        //Stellt 'nextop' dar, mit:
-        //name: string              Name der Haltestelle
-        //planned_time: string      Vorraussichtliche Ankunftszeit
-        socket.on('nextstop',nextstopdata =>{
-            let nextstop = document.getElementsByClassName('nextstop')[0];
-            nextstop.innerHTML = nextstopdata.name;
-            let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
-            arrivaltime.innerHTML = nextstopdata.planned_time;
-        })
-
-        //Verarbeitung der Informationen für Bereich 2. Darstellung abhaengig von den uebergebenen Daten.
-        //Stellt 'information' dar, mit:
-        //type: string              Datentyp der uebergebenen message
-        //header: string            Art der Anzeige(haltestellen, anschluesse, werbung, etc.)
-        //message: string[][]       Die Darzustellenden Informationen
-        socket.on('information',infodata =>{
-            /*
-            // console.log(infodata.message.items)
-            //let data = infodata.message.items;
-
-            let final_html = "";
-
-            data.forEach(ele => {
-                final_html += "<div id=\"mon_id\">" + ele[0] + " " + ele[1] + "</div>";
-            });
-            info.innerHTML = final_html;
-            */
-
-            let info = document.getElementsByClassName('information')[0];
-
-            info.innerHTML =  getTable(infodata.header ,infodata.message.items, infodata.message.headers) ;
-
-        })
+</div>
 
 
-        socket.on('notification', notedata =>{
-            let notification = document.getElementById("message");
-            if(notedata.type == "add"){
-                notifs[notedata.id] = notedata.message;
+<script>
+    const socket = window.io();
+    var notifs = [];
+
+    //Verarbeitung der Informationen für Bereich 1 mit Informationen ueber den aktuellen Bus.
+    //Stellt 'lineinfo' dar, mit:
+    //name: string          Name/Nummer des Busses
+    //direction: string     Richtung, in die der Bus faehrt
+    socket.on('lineinfo',lineinfodata =>{
+        let line = document.getElementsByClassName('line')[0];
+        line.innerHTML = lineinfodata.name;
+        let direction = document.getElementsByClassName('direction')[0];
+        direction.innerHTML = lineinfodata.dest;
+    })
+
+    //Verarbeitung der Informationen für Bereich 2 mit Informationen ueber die naechste Haltestelle.
+    //Stellt 'nextop' dar, mit:
+    //name: string              Name der Haltestelle
+    //planned_time: string      Vorraussichtliche Ankunftszeit
+    socket.on('nextstop',nextstopdata =>{
+        let nextstop = document.getElementsByClassName('nextstop')[0];
+        nextstop.innerHTML = nextstopdata.name;
+        let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
+        arrivaltime.innerHTML = nextstopdata.planned_time;
+    })
+
+    //Verarbeitung der Informationen für Bereich 2. Darstellung abhaengig von den uebergebenen Daten.
+    //Stellt 'information' dar, mit:
+    //type: string              Datentyp der uebergebenen message
+    //header: string            Art der Anzeige(haltestellen, anschluesse, werbung, etc.)
+    //message: string[][]       Die Darzustellenden Informationen
+    socket.on('information',infodata =>{
+        let info = document.getElementsByClassName('information')[0];
+        info.innerHTML = getTable(infodata.header ,infodata.message.items, infodata.message.headers);
+    })
+
+    socket.on('notification', notedata =>{
+        let notification = document.getElementById("message");
+        if(notedata.type == "add"){
+            notifs[notedata.id] = notedata.message;
+        }
+        else if (notedata.type == "delete"){
+            notifs.splice(message.id, 1);
+        }
+        notification.innerHTML = formatNotifications();
+        runNotifications();
+    })
+
+    function aktualisiereUhrzeit() {
+        var jetzt = new Date();
+        var stunde = jetzt.getHours();
+        var minute = jetzt.getMinutes();
+        var sekunde = jetzt.getSeconds();
+
+        // Führende Nullen hinzufügen, wenn die Zahl kleiner als 10 ist
+        stunde = (stunde < 10 ? "0" : "") + stunde;
+        minute = (minute < 10 ? "0" : "") + minute;
+
+        // Uhrzeit als String zusammensetzen
+        var uhrzeitString = stunde + ":" + minute;
+
+        // Element mit der ID "uhrzeit" finden und den Text setzen
+        var time = document.getElementsByClassName("time")[0];
+        time.innerHTML = uhrzeitString;
+    }
+
+    //2-Dimensionales Array als Tabelle Ausgeben
+    //Parameter:
+    //message: string[][]       Tabelleninhalt ohne Überschriften
+    //ueberschrift: string[]    Überschriften. Bei keinen Überschriften: []
+    //Return:
+    //text: string  Tabellendarstellung in HTML; Ueberschriftenzeile nur bei Uebergabe
+    function getTable(type, message, ueberschrift){
+        let text = "<table id=" + type + ">";
+        if(ueberschrift.length) {
+            text += "<tr>";
+            for (let u in ueberschrift) {
+                text += "<th>" + ueberschrift[u] + "</th>";
             }
-            else if (notedata.type == "delete"){
-                notifs.splice(message.id, 1);
-            }
-            notification.innerHTML = displayNotifications();
-        })
-
-        function aktualisiereUhrzeit() {
-            var jetzt = new Date();
-            var stunde = jetzt.getHours();
-            var minute = jetzt.getMinutes();
-            var sekunde = jetzt.getSeconds();
-
-            // Führende Nullen hinzufügen, wenn die Zahl kleiner als 10 ist
-            stunde = (stunde < 10 ? "0" : "") + stunde;
-            minute = (minute < 10 ? "0" : "") + minute;
-
-            // Uhrzeit als String zusammensetzen
-            var uhrzeitString = stunde + ":" + minute;
-
-            // Element mit der ID "uhrzeit" finden und den Text setzen
-            var time = document.getElementsByClassName("time")[0];
-            time.innerHTML = uhrzeitString;
+            text += "</tr>";
         }
 
-
-        //2-Dimensionales Array als Tabelle Ausgeben
-        //Parameter:
-        //message: string[][]       Tabelleninhalt ohne Überschriften
-        //ueberschrift: string[]    Überschriften. Bei keinen Überschriften: []
-        //Return:
-        //text: string  Tabellendarstellung in HTML; Ueberschriftenzeile nur bei Uebergabe
-        function getTable(type, message, ueberschrift){
-            let text = "<table id=" + type + ">";
-            if(ueberschrift.length) {
-                text += "<tr>";
-                for (let u in ueberschrift) {
-                    text += "<th>" + ueberschrift[u] + "</th>";
-                }
-                text += "</tr>";
+        for (let s in message){
+            text += "<tr>";
+            for (let t in message[s]){
+                text += "<td>" + message[s][t] + "</td>";
             }
-
-            for (let s in message){
-                text += "<tr>";
-                for (let t in message[s]){
-
-                    text += "<td>" + message[s][t]  + "&nbsp;"+ "&nbsp;"+ "&nbsp;" + "&nbsp;"+ "&nbsp;"+ "&nbsp;"+ "&nbsp;"+ "&nbsp;" +"</td>";
-                }
-                text += "</tr>";
-            }
-            return text;
+            text += "</tr>";
         }
+        return text;
+    }
 
-
-
-        //Array an Nachrichten als leserlich aneinander-reihen
-        //Parameter: -
-        //Return:
-        //disp: string  Nachrichten aus globaler Variable 'notifs' mit Unterteilung ' - '
-        function displayNotifications(){
-            let disp = '';
-            for (let n in notifs){
-                if (n == 0){
-                    disp += notifs[n];
-                }
-                else{
-                    disp += ' - ' + notifs[n];
-                }
+    //Array an Nachrichten als leserlich aneinander-reihen
+    //Parameter: -
+    //Return:
+    //disp: string  Nachrichten aus globaler Variable 'notifs' mit Unterteilung ' - '
+    function formatNotifications(){
+        let disp = '';
+        for (let n in notifs){
+            if (n == 0){
+                disp += notifs[n];
             }
-            return disp;
-        }
-
-        //Soll nur dargestellt werden, wenn Nachrichten zur verfuegung stehen
-        if(notifs.length > 0){
-            let notifications = document.getElementById("notifications");
-
-            const message = document.getElementById("message");
-            const container = document.getElementById("message-container");
-
-            // Modifier la durée de l'animation en fonction de la largeur du message
-            const animationDuration = (message.innerText.length + container.offsetWidth) * 10;
-
-            // Ajouter la durée de l'animation au style du message
-            message.style.animationDuration = animationDuration + "ms";
-
-            // Fonction pour démarrer ou redémarrer l'animation
-            function startAnimation() {
-                message.style.animation = "none";
-                message.offsetHeight;
-                message.style.animation = null;
+            else{
+                disp += ' - ' + notifs[n];
             }
-
-            // Démarrer l'animation
-            startAnimation();
         }
+        return disp;
+    }
 
-        // Die Funktion einmal beim Laden der Seite ausführen
-        aktualisiereUhrzeit();
+    var id = null;
+    //Animation der Nachrichtenleiste; Nimmt die Länge des Textes innerhalb von 'message' und laesst diese
+    //  von Anfang bis ende laufen
+    //Parameter: -
+    //Return: -
+    function runNotifications(){
+        const message = document.getElementById("message");
+        const container = document.getElementById("message-container");
 
-        // Die Funktion alle 1000ms (1 Sekunde) wiederholen
-        setInterval(aktualisiereUhrzeit, 1000);
-    
-    </script>
+        let position = - message.offsetWidth;   //Startposition ist rechte Border - Laenge der Nachrichten
+        clearInterval(id);
+        id = setInterval(frame, 10);            //neuer farme alle 10ms
+        function frame(){
+            if(position >= container.offsetWidth){
+                clearInterval(id);
+                runNotifications();
+            }
+            else {
+                position += 3;                  //3px nach links verschieben
+                message.style.right = position + "px";
+            }
+        }
+    }
+
+    //let notifications = document.getElementById("notifications");
+
+    //const message = document.getElementById("message");
+    //const container = document.getElementById("message-container");
+
+    // Modifier la durée de l'animation en fonction de la largeur du message
+    //const animationDuration = ((message.innerText.length * 20) + container.offsetWidth) / (container.offsetWidth/12);
+
+    // Ajouter la durée de l'animation au style du message
+    //message.style.animationDuration = animationDuration + "s";
+
+    // Fonction pour démarrer ou redémarrer l'animation
+    //function startAnimation() {
+    //    message.style.animation = "none";
+    //    message.offsetHeight;
+    //    message.style.animation = null;
+    //}
+
+    // Démarrer l'animation
+    //startAnimation();
+
+    // Die Funktion einmal beim Laden der Seite ausführen
+    aktualisiereUhrzeit();
+
+    // Die Funktion alle 1000ms (1 Sekunde) wiederholen
+    setInterval(aktualisiereUhrzeit, 1000);
+
+</script>
 </body>
 </html>
