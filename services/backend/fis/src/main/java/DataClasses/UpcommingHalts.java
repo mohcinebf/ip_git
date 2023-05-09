@@ -1,4 +1,4 @@
-package main;
+package DataClasses;
 /*
     Informationstypus-Klasse für die Anzeige der Fahrstrecke der eigenen Linie
     z.B.
@@ -10,12 +10,14 @@ package main;
     Is singulär mit relativ hoher Frequenz. Die Anzeigeinformationen können aufgrund ihres dynmaischen Charakters hier nur schlecht in der Klasse integriert werden.
  */
 
+import DataClasses.Information;
+
 public class UpcommingHalts extends Information
 {
     public UpcommingHalts(int freq, int duration)
     {
+        super();
         this.type = "Fahrstrecken_Anzeige";
-        this.id = Information.giveNewId();
         this.isSingle = true;
         this.frequency = freq;
         this.duration = duration;

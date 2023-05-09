@@ -10,12 +10,16 @@
 .direction{
     flex: 0.967;
 }
+
+.container{
+    background-color: lightgreen;
+}
+
 .content{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: white;
     padding: 10px;
     font-size: 30px;
 }
@@ -26,10 +30,14 @@
     display: flex;
     align-items: center;
     position: relative;
-    bottom: 0px;
+    bottom: 0;
+    left: 0;
     overflow: hidden;
     height: 30px;
-    border: 10px solid #ccc;
+    /*border: 10px solid #ccc;*/
+    background-color: yellow;
+    font-weight: bold;
+    border: 2px dashed black;
 }
 
 #message {
@@ -46,16 +54,38 @@
     left: 0px;
     width: 100%;
 }
-/*    animation: marquee 20s linear;
-    animation-iteration-count: infinite;
-    animation
+
+tr{
+    padding: 0;
+}
+td:nth-child(2){
+    border: none;
+    border-left: 3px solid green;
+    padding: 8px;
+    position: relative;
 }
 
-@keyframes marquee {
-    from {
-        left: 100%;
-    }
-    to {
-        left: -100%;
-    }
-}*/
+td:nth-child(2)::after{
+    content: '';
+    display: block;
+    height: 8px;
+    width: 8px;
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid green;
+    left: -6.5px;
+    top: 45%;
+    background-color: #90ee90;
+}
+
+td:nth-child(2)::before{
+    content: '';
+    display: block;
+    height: 2px;
+    width: 2.5px;
+    position: absolute;
+    background-color: green;
+    position: absolute;
+    top: -2px;
+    left: -2.5px;
+}

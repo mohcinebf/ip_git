@@ -1,10 +1,9 @@
-package main;
+package DataClasses;
 
 import java.util.Objects;
 
-public class Emergency
+public class Emergency extends InfoSection2
 {
-    public String msg;
     public int hashValue;
     public boolean activ;
     private static final boolean PRINT_MSG_IN_DEBUGSTRING_FUNCTION = true;

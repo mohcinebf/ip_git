@@ -25,12 +25,19 @@
     </div>
     <div class="notifications">
         <div id="message-container">
-            <span id="message"></span>
+           <span id="message"></span>
         </div>
     </div>
+    <div class="timeline">
+        <div class="timeline-object complete">
+            <div class="timeline-status"></div>
+            <div class="timeline-content">
 
-
+            </div>
+        </div>
+    </div>
     <script>
+
         const socket = window.io();
         var notifs = [];
 
@@ -62,9 +69,24 @@
         //header: string            Art der Anzeige(haltestellen, anschluesse, werbung, etc.)
         //message: string[][]       Die Darzustellenden Informationen
         socket.on('information',infodata =>{
+            /*
+            // console.log(infodata.message.items)
+            //let data = infodata.message.items;
+
+            let final_html = "";
+
+            data.forEach(ele => {
+                final_html += "<div id=\"mon_id\">" + ele[0] + " " + ele[1] + "</div>";
+            });
+            info.innerHTML = final_html;
+            */
+
             let info = document.getElementsByClassName('information')[0];
-            info.innerHTML = getTable(infodata.header ,infodata.message.items, infodata.message.headers);
+
+            info.innerHTML =  getTable(infodata.header ,infodata.message.items, infodata.message.headers) ;
+
         })
+
 
         socket.on('notification', notedata =>{
             let notification = document.getElementById("message");
@@ -115,7 +137,8 @@
             for (let s in message){
                 text += "<tr>";
                 for (let t in message[s]){
-                    text += "<td>" + message[s][t] + "</td>";
+
+                    text += "<td>" + message[s][t]  + "&nbsp;"+ "&nbsp;"+ "&nbsp;" + "&nbsp;"+ "&nbsp;"+ "&nbsp;"+ "&nbsp;"+ "&nbsp;" +"</td>";
                 }
                 text += "</tr>";
             }

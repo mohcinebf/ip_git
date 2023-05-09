@@ -1,5 +1,7 @@
 package main;
 
+import DataClasses.Notification;
+
 import java.util.ArrayList;
 
 /**
@@ -12,7 +14,7 @@ public class NotificationHandler extends Handler
     private static final int MAX_QUEUE_SIZE = 32; // sollte später durch eine config gesetzt werden
 
     /**
-     * Konstruktor für den NotificationHandler. Wird von der Main oder Core aufgerufen, um das NotificationSystem zu starten.
+     * Konstruktor für den NotificationHandler. Wird von der main oder Core aufgerufen, um das NotificationSystem zu starten.
      */
     public NotificationHandler()
     {

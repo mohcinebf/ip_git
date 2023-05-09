@@ -2,13 +2,17 @@
 // then press Enter. You can now see whitespace characters in your code.
 package main;
 
+import DataClasses.Information;
+import DataClasses.TextAdversiting;
+import DataClasses.UpcommingHalts;
+
 /**
     Der InformationHandler (IH oder ih) ist die Zentralelogik für die Verwaltung der Informationen.
     Der IH nutzt den Scheduler, um die nächsten Informationstypen zu bestimmen, besitzt die Handler Klassenstruktur für die Queue Verbindung zum Core,
     und startet außerdem den InformationOberserver; dies ist der Thread, welcher die Ein-/Ausgänge des Handlers überwacht und entsprechend aud Veränderungen reagiert.
 
     Da der Thread leider nicht als Methode des InformationHandlers in java erstellt werden kann, müssen mehr Methoden public sein, als von mir gewollt.
-    Die folgenden Methoden sind für die Benutzung durch den Core oder die Main freigegeben
+    Die folgenden Methoden sind für die Benutzung durch den Core oder die main freigegeben
     -Alle ererbten öffentlichen Funktion der Handler-Klasse
     -stopMyObserver - Methode um den Observer sauber zu beenden - Aufzurufen, wenn das Programm enden soll.
     -popInfo - macht das Gleiche wie Handler.pop nur ist die Rpckgabe schon gecastet.
@@ -84,7 +88,7 @@ public class InformationHandler extends Handler
     private void ini()
     {
         basicInfoFiller(this,TEMP_INT_UPCOMMING_FREQ,null,null,TEMP_INT_UPCOMMING_DURA,null,null);
-        dirtyTestingDataFilling(); // Für's erste so
+        // dirtyTestingDataFilling(); // Für's erste so
     }
 
     /**

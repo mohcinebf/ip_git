@@ -1,6 +1,8 @@
 package main;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -12,16 +14,22 @@ import java.net.InetSocketAddress;
  */
 public class WebsocketServer extends WebSocketServer {
     
-    WebsocketServer(InetSocketAddress addr) {
+    public WebsocketServer(InetSocketAddress addr) {
         super(addr);
     }
 
     private static final Gson gson = new Gson();
     private WebSocket socket;
+    private boolean hasConnection = false;
+
+    public boolean hasConnection() {
+        return this.hasConnection;
+    }
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         this.socket = webSocket;
+        this.hasConnection = true;
     }
 
     /**
@@ -37,7 +45,7 @@ public class WebsocketServer extends WebSocketServer {
     }
 
     public void sendLineInfo(LineInfo info) {
-        var data = gson.toJson(info);
+        var data = gson.toJson(createMessage(LineInfo.topic, info));
         this.socket.send(data);
     }
 
@@ -54,7 +62,7 @@ public class WebsocketServer extends WebSocketServer {
     }
 
     public void sendNextStop(NextStop stop) {
-        var data = gson.toJson(stop);
+        var data = gson.toJson(createMessage(NextStop.topic, stop));
         this.socket.send(data);
     }
 
@@ -64,9 +72,9 @@ public class WebsocketServer extends WebSocketServer {
      * @param message Die Nachricht die angezeigt wird. Leer, wenn Type == REMOVE.
      */
     public record Notification(String id, Type type, String message) {
-        static String topic = "notifications";
+        static String topic = "notification";
 
-        enum Type {
+        public enum Type {
             ADD,
             REMOVE,
         }
@@ -77,7 +85,7 @@ public class WebsocketServer extends WebSocketServer {
     }
 
     public void sendNotification(Notification notification) {
-        var data = gson.toJson(notification);
+        var data = gson.toJson(createMessage(Notification.topic, notification));
         this.socket.send(data);
     }
 
@@ -91,7 +99,9 @@ public class WebsocketServer extends WebSocketServer {
     }
 
     public void sendInformationText(InformationText info) {
-        var data = gson.toJson(info);
+        var jo = createMessage(InformationText.topic, info);
+        jo.addProperty("type", InformationText.type);
+        var data = gson.toJson(jo);
         this.socket.send(data);
     }
 
@@ -108,12 +118,15 @@ public class WebsocketServer extends WebSocketServer {
     }
 
     public void sendInformationTable(InformationTable info) {
-        var data = gson.toJson(info);
+        var jo = createMessage(InformationTable.topic, info);
+        jo.addProperty("type", InformationTable.type);
+        var data = gson.toJson(jo);
         this.socket.send(data);
     }
 
     @Override
     public void onClose(WebSocket webSocket, int code, String reason, boolean remote) {
+        this.hasConnection = false;
         System.out.println("frontend disconnected: " + reason);
     }
 
@@ -130,5 +143,11 @@ public class WebsocketServer extends WebSocketServer {
     @Override
     public void onStart() {
         System.out.println("started websocket server");
+    }
+
+    private JsonObject createMessage(String topic, Object data) {
+        var message = gson.fromJson(gson.toJson(data), JsonObject.class);
+        message.addProperty("topic", topic);
+        return message;
     }
 }

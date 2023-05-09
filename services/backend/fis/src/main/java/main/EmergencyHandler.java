@@ -1,5 +1,7 @@
 package main;
 
+import DataClasses.Emergency;
+
 import java.util.ArrayList;
 
 public class EmergencyHandler extends Handler
@@ -18,7 +20,7 @@ public class EmergencyHandler extends Handler
     //---------------------------------------------------------------------------------------------------------
 
     /**
-     * Konstruktor für den NotificationHandler. Wird von der Main oder Core aufgerufen, um das NotificationSystem zu starten.
+     * Konstruktor für den NotificationHandler. Wird von der main oder Core aufgerufen, um das NotificationSystem zu starten.
      */
     public EmergencyHandler()
     {
@@ -177,7 +179,7 @@ public class EmergencyHandler extends Handler
      * Mit dieser Methode kann ein Notfall später gelöscht werden und wird von checkUpdates aufgerufen werden. Bis auf Weiteres public, damit das System von der main aus gesteuert werden kann.
      * @param msg Die Nachricht die erhalten wurde.
      */
-    private void removeEmer(String msg)
+    public void removeEmer(String msg)
     {
         this.removeEmer(Emergency.hashCode(msg));
         //Wird entfernt, wenn kein Zugriff über main mehr gewünscht sein sollte
@@ -187,7 +189,7 @@ public class EmergencyHandler extends Handler
      * Mit dieser Methode kann ein Notfall später erstellt werden und wird von checkUpdates aufgerufen werden. Bis auf Weiteres public, damit das System von der main aus gesteuert werden kann.
      * @param msg Die Nachricht die erhalten wurde.
      */
-    private void addEmer(String msg)
+    public void addEmer(String msg)
     {
         this.addNewEmer(new Emergency(msg,true));
         //Wird entfernt, wenn kein Zugriff über main mehr gewünscht sein sollte
