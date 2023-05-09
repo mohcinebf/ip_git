@@ -29,52 +29,62 @@
 
 
 <script>
-    const socket = window.io();
+    // const socket = window.io();
+    const socket = new WebSocket("ws://localhost:8887");
     var notifs = [];
 
     //Verarbeitung der Informationen für Bereich 1 mit Informationen ueber den aktuellen Bus.
     //Stellt 'lineinfo' dar, mit:
     //name: string          Name/Nummer des Busses
     //direction: string     Richtung, in die der Bus faehrt
-    socket.on('lineinfo',lineinfodata =>{
-        let line = document.getElementsByClassName('line')[0];
-        line.innerHTML = lineinfodata.name;
-        let direction = document.getElementsByClassName('direction')[0];
-        direction.innerHTML = lineinfodata.dest;
+    socket.addEventListener( "open", event=>{
+        console.log("connection opened ");
+    });
+    socket.addEventListener('message',event =>{
+        console.log("message bekommen "+event.data);
+        let lineinfodata = JSON.parse(event.data);
+        if(lineinfodata.topic === "lineinfo") {
+            let line = document.getElementsByClassName('line')[0];
+            line.innerHTML = lineinfodata.name;
+            let direction = document.getElementsByClassName('direction')[0];
+            direction.innerHTML = lineinfodata.dest;
+        }
+        else if(lineinfodata.topic === "nextstop"){
+            let nextstop = document.getElementsByClassName('nextstop')[0];
+            nextstop.innerHTML = lineinfodata.name;
+            let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
+            arrivaltime.innerHTML = lineinfodata.planned_time;
+        }
+        else if(lineinfodata.topic === "information" && lineinfodata.type === "table"){
+            console.log("hello ich bin in info");
+            let info = document.getElementsByClassName('information')[0];
+            info.innerHTML = getTable(lineinfodata.header ,lineinfodata.message.items, lineinfodata.message.headers);
+        }
+        else if(lineinfodata.topic === "notification"){
+            let notification = document.getElementById("message");
+            if(lineinfodata.type === "ADD"){
+                notifs[lineinfodata.id] = lineinfodata.message;
+            }
+            else if (lineinfodata.type === "REMOVE"){
+                notifs.splice(lineinfodata.id, 1);
+            }
+            notification.innerHTML = formatNotifications();
+            runNotifications();
+        }
     })
 
     //Verarbeitung der Informationen für Bereich 2 mit Informationen ueber die naechste Haltestelle.
     //Stellt 'nextop' dar, mit:
     //name: string              Name der Haltestelle
     //planned_time: string      Vorraussichtliche Ankunftszeit
-    socket.on('nextstop',nextstopdata =>{
-        let nextstop = document.getElementsByClassName('nextstop')[0];
-        nextstop.innerHTML = nextstopdata.name;
-        let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
-        arrivaltime.innerHTML = nextstopdata.planned_time;
-    })
+
 
     //Verarbeitung der Informationen für Bereich 2. Darstellung abhaengig von den uebergebenen Daten.
     //Stellt 'information' dar, mit:
     //type: string              Datentyp der uebergebenen message
     //header: string            Art der Anzeige(haltestellen, anschluesse, werbung, etc.)
     //message: string[][]       Die Darzustellenden Informationen
-    socket.on('information',infodata =>{
-        let info = document.getElementsByClassName('information')[0];
-        info.innerHTML = getTable(infodata.header ,infodata.message.items, infodata.message.headers);
-    })
 
-    socket.on('notification', notedata =>{
-        let notification = document.getElementById("message");
-        if(notedata.type == "add"){
-            notifs[notedata.id] = notedata.message;
-        }
-        else if (notedata.type == "delete"){
-            notifs.splice(message.id, 1);
-        }
-        notification.innerHTML = formatNotifications();
-        runNotifications();
-    })
 
     function aktualisiereUhrzeit() {
         var jetzt = new Date();
@@ -101,7 +111,8 @@
     //Return:
     //text: string  Tabellendarstellung in HTML; Ueberschriftenzeile nur bei Uebergabe
     function getTable(type, message, ueberschrift){
-        let text = "<table id=" + type + ">";
+        let className = type === "Nächste Haltestellen"?"haltstellen":"anschluesse" ;
+        let text = "<table id=" + className + ">";
         if(ueberschrift.length) {
             text += "<tr>";
             for (let u in ueberschrift) {
