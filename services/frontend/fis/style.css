@@ -49,6 +49,7 @@
 
 .information #haltestellen{
     padding: 14px 10px 10px 10px;
+    border-collapse: collapse;
 }
 
 #haltestellen{
@@ -69,6 +70,7 @@
 
 #haltestellen td {
     padding-left: 50px;
+    padding-right: 20px;
 }
 
 #haltestellen td:nth-child(2){
@@ -106,7 +108,7 @@
 
 #anschluesse{
     padding: 10px;
-    font-size: 30px;
+    /*font-size: 30px;*/
     margin-left: auto;
     margin-right: auto;
 }
@@ -117,6 +119,7 @@
 #anschluesse th {
     padding: 10px;
     text-align: left;
+    text-align: center;
 }
 
 .notifications {

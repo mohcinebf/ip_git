@@ -32,6 +32,8 @@
     //const socket = window.io();
     const socket = new WebSocket("ws://localhost:8887");
     var notifs = [];
+    let divElementnotifications = document.getElementsByClassName('notifications')[0];
+    divElementnotifications.style.visibility = "hidden";
 
     socket.addEventListener( "open", event=>{
         console.log("connection opened ");
@@ -39,7 +41,7 @@
 
     //socket.on('message', event=>{
     socket.addEventListener('message',event =>{
-        //console.log("message bekommen "+event.data);
+        console.log("message bekommen "+event.data);
         let infodata = JSON.parse(event.data);//event.data;
         if(infodata.topic === "lineinfo") {
             let line = document.getElementsByClassName('line')[0];
@@ -68,17 +70,20 @@
             }
             info.innerHTML = display;
         }
-        else if(infodata.topic === "notification"){
-            let notification = document.getElementById("message");
-            if(infodata.type === "ADD"){
-                notifs.push({id:infodata.id, message:infodata.message});
+
+        else if(infodata.topic === "notification") {
+                let notification = document.getElementById("message");
+                if (infodata.type === "ADD") {
+                    divElementnotifications.style.visibility = "visible";
+                    notifs.push({id: infodata.id, message: infodata.message});
+                } else if (infodata.type === "REMOVE") {
+                    deleteNotification(infodata.id);
+                    divElementnotifications.style.visibility = "hidden";
+                }
+                notification.innerHTML = formatNotifications();
+                runNotifications();
             }
-            else if (infodata.type === "REMOVE"){
-                deleteNotification(infodata.id);
-            }
-            notification.innerHTML = formatNotifications();
-            runNotifications();
-        }
+
     })
 
     function aktualisiereUhrzeit() {
