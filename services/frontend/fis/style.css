@@ -46,27 +46,63 @@
     background-image: linear-gradient(white, white, rgb(161,223, 165));
 }
 
-.information #haltstellen{
+.information #haltestellen{
     padding: 14px 10px 10px 10px;
     font-size: 60px;
 }
 
-#haltstellen{
+#haltestellen{
     /*width: -webkit-fill-available;*/
     width: 100%;
 }
 
-#haltstellen tr{
+#haltestellen tr{
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-
-
 }
-#haltstellen tbody td:last-child{
+
+#haltestellen tbody td:last-child{
     flex:0.9;
 }
+
+#haltestellen td {
+    padding-left: 50px;
+}
+
+#haltestellen td:nth-child(2){
+    border: none;
+    border-left: 8px solid rgb(45,202, 63);
+    padding: 8px;
+    position: relative;
+    padding-left: 50px;
+}
+
+#haltestellen  td:nth-child(2)::after{
+    content: '';
+    display: block;
+    height: 16px;
+    width: 16px;
+    position: absolute;
+    border-radius: 50%;
+    border: 8px solid rgb(45,202, 63);
+    left: -21px;
+    top: 35%;
+    background-color: white;
+}
+
+/*#haltestellen td:nth-child(2)::before{
+    content: '';
+    display: block;
+    height: 2px;
+    width: 2.5px;
+    position: absolute;
+    background-color: rgb(45,202, 63);
+    position: absolute;
+    top: -2px;
+    left: -2.5px;
+}*/
 
 #anschluesse{
     padding: 10px;
@@ -83,43 +119,6 @@
     text-align: left;
 }
 
-#haltstellen td {
-    padding-left: 50px;
-}
-
-#haltstellen td:nth-child(2){
-    border: none;
-    border-left: 8px solid rgb(45,202, 63);
-    padding: 8px;
-    position: relative;
-    padding-left: 50px;
-}
-
-#haltstellen  td:nth-child(2)::after{
-    content: '';
-    display: block;
-    height: 16px;
-    width: 16px;
-    position: absolute;
-    border-radius: 50%;
-    border: 8px solid rgb(45,202, 63);
-    left: -21px;
-    top: 35%;
-    background-color: white;
-}
-
-/*#haltstellen td:nth-child(2)::before{
-    content: '';
-    display: block;
-    height: 2px;
-    width: 2.5px;
-    position: absolute;
-    background-color: rgb(45,202, 63);
-    position: absolute;
-    top: -2px;
-    left: -2.5px;
-}*/
-
 .notifications {
     display: flex;
     width: 100%;
@@ -127,40 +126,6 @@
     position: fixed;
     bottom: 0px;
     left: 0px;
-}
-tr{
-    padding: 0;
-}
-td:nth-child(2){
-    border: none;
-    border-left: 3px solid green;
-    padding: 8px;
-    position: relative;
-}
-
-td:nth-child(2)::after{
-    content: '';
-    display: block;
-    height: 8px;
-    width: 8px;
-    position: absolute;
-    border-radius: 50%;
-    border: 1px solid green;
-    left: -6.5px;
-    top: 45%;
-    background-color: #90ee90;
-}
-
-td:nth-child(2)::before{
-    content: '';
-    display: block;
-    height: 2px;
-    width: 2.5px;
-    position: absolute;
-    background-color: green;
-    position: absolute;
-    top: -2px;
-    left: -2.5px;
 }
 
 #message-container {

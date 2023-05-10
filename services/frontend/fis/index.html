@@ -33,58 +33,49 @@
     const socket = new WebSocket("ws://localhost:8887");
     var notifs = [];
 
-    //Verarbeitung der Informationen für Bereich 1 mit Informationen ueber den aktuellen Bus.
-    //Stellt 'lineinfo' dar, mit:
-    //name: string          Name/Nummer des Busses
-    //direction: string     Richtung, in die der Bus faehrt
     socket.addEventListener( "open", event=>{
         console.log("connection opened ");
     });
+
     socket.addEventListener('message',event =>{
-        console.log("message bekommen "+event.data);
-        let lineinfodata = JSON.parse(event.data);
-        if(lineinfodata.topic === "lineinfo") {
+        //console.log("message bekommen "+event.data);
+        let infodata = JSON.parse(event.data);
+        if(infodata.topic === "lineinfo") {
             let line = document.getElementsByClassName('line')[0];
-            line.innerHTML = lineinfodata.name;
+            line.innerHTML = infodata.name;
             let direction = document.getElementsByClassName('direction')[0];
-            direction.innerHTML = lineinfodata.dest;
+            direction.innerHTML = infodata.dest;
         }
-        else if(lineinfodata.topic === "nextstop"){
+        else if(infodata.topic === "nextstop"){
             let nextstop = document.getElementsByClassName('nextstop')[0];
-            nextstop.innerHTML = lineinfodata.name;
+            nextstop.innerHTML = infodata.name;
             let arrivaltime = document.getElementsByClassName('arrivaltime')[0];
-            arrivaltime.innerHTML = lineinfodata.planned_time;
+            arrivaltime.innerHTML = infodata.planned_time;
         }
-        else if(lineinfodata.topic === "information" && lineinfodata.type === "table"){
-            console.log("hello ich bin in info");
+        else if(infodata.topic === "information"){
+            //console.log("hello ich bin in info");
             let info = document.getElementsByClassName('information')[0];
-            info.innerHTML = getTable(lineinfodata.header ,lineinfodata.message.items, lineinfodata.message.headers);
-        }
-        else if(lineinfodata.topic === "notification"){
-            let notification = document.getElementById("message");
-            if(lineinfodata.type === "ADD"){
-                notifs[lineinfodata.id] = lineinfodata.message;
+            let display;
+            if (infodata.header === "Nächste Haltestellen"){
+                display = getTable('haltestellen' ,infodata.message.items, []);
             }
-            else if (lineinfodata.type === "REMOVE"){
-                notifs.splice(lineinfodata.id, 1);
+            else if (infodata.header === "Anschlüsse"){
+                display = getTable('anschluesse' ,infodata.message.items, infodata.message.headers);
+            }
+            info.innerHTML = display;
+        }
+        else if(infodata.topic === "notification"){
+            let notification = document.getElementById("message");
+            if(infodata.type === "ADD"){
+                notifs.push({id:infodata.id, message:infodata.message});
+            }
+            else if (infodata.type === "REMOVE"){
+                deleteNotification(infodata.id);
             }
             notification.innerHTML = formatNotifications();
             runNotifications();
         }
     })
-
-    //Verarbeitung der Informationen für Bereich 2 mit Informationen ueber die naechste Haltestelle.
-    //Stellt 'nextop' dar, mit:
-    //name: string              Name der Haltestelle
-    //planned_time: string      Vorraussichtliche Ankunftszeit
-
-
-    //Verarbeitung der Informationen für Bereich 2. Darstellung abhaengig von den uebergebenen Daten.
-    //Stellt 'information' dar, mit:
-    //type: string              Datentyp der uebergebenen message
-    //header: string            Art der Anzeige(haltestellen, anschluesse, werbung, etc.)
-    //message: string[][]       Die Darzustellenden Informationen
-
 
     function aktualisiereUhrzeit() {
         var jetzt = new Date();
@@ -111,8 +102,7 @@
     //Return:
     //text: string  Tabellendarstellung in HTML; Ueberschriftenzeile nur bei Uebergabe
     function getTable(type, message, ueberschrift){
-        let className = type === "Nächste Haltestellen"?"haltstellen":"anschluesse" ;
-        let text = "<table id=" + className + ">";
+        let text = "<table id=" + type + ">";
         if(ueberschrift.length) {
             text += "<tr>";
             for (let u in ueberschrift) {
@@ -138,12 +128,7 @@
     function formatNotifications(){
         let disp = '';
         for (let n in notifs){
-            if (n == 0){
-                disp += notifs[n];
-            }
-            else{
-                disp += ' - ' + notifs[n];
-            }
+            disp += notifs[n].message + '   ';
         }
         return disp;
     }
@@ -172,26 +157,13 @@
         }
     }
 
-    //let notifications = document.getElementById("notifications");
-
-    //const message = document.getElementById("message");
-    //const container = document.getElementById("message-container");
-
-    // Modifier la durée de l'animation en fonction de la largeur du message
-    //const animationDuration = ((message.innerText.length * 20) + container.offsetWidth) / (container.offsetWidth/12);
-
-    // Ajouter la durée de l'animation au style du message
-    //message.style.animationDuration = animationDuration + "s";
-
-    // Fonction pour démarrer ou redémarrer l'animation
-    //function startAnimation() {
-    //    message.style.animation = "none";
-    //    message.offsetHeight;
-    //    message.style.animation = null;
-    //}
-
-    // Démarrer l'animation
-    //startAnimation();
+    function deleteNotification(id){
+        for (n in notifs){
+            if (notifs[n].id == id){
+                notifs.splice(n, 1);
+            }
+        }
+    }
 
     // Die Funktion einmal beim Laden der Seite ausführen
     aktualisiereUhrzeit();
