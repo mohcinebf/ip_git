@@ -44,11 +44,11 @@
 .information{
     height: 100%;
     background-image: linear-gradient(white, white, rgb(161,223, 165));
+    font-size: 60px;
 }
 
 .information #haltestellen{
     padding: 14px 10px 10px 10px;
-    font-size: 60px;
 }
 
 #haltestellen{
@@ -57,9 +57,9 @@
 }
 
 #haltestellen tr{
-    display: flex;
+    /*display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-around;*/
     align-items: center;
 }
 
